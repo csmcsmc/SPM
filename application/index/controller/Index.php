@@ -1,6 +1,6 @@
 <?php
 namespace app\index\controller;
-
+fsdf
 class Index
 {
     public function index()
