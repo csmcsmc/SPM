@@ -1,5 +1,6 @@
 <?php
 namespace app\admin\controller;
+use gmars\rbac\Rbac;
 class Index extends Common
 {
     public function index()
@@ -11,4 +12,9 @@ class Index extends Common
     {
         return 'hello,' . $name;
     }
+
+//    public function rbac(){      RBAC
+//        $rbac = new Rbac();
+//        $rbac->createTable();
+//    }
 }
