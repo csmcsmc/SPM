@@ -35,6 +35,7 @@ return [
 
     'tpl_replace_string'=>[
         '__STATIC__'=>'/static/hui',
+        '__STA__'=>'/static/index',
     ]
 
 ];
