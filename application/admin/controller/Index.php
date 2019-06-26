@@ -13,7 +13,7 @@ class Index extends Common
         return 'hello,' . $name;
     }
 
-//    public function rbac(){      RBAC
+//    public function rbac(){
 //        $rbac = new Rbac();
 //        $rbac->createTable();
 //    }

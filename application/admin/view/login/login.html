@@ -42,15 +42,15 @@
             <div class="row cl">
                 <div class="formControls col-xs-8 col-xs-offset-3">
 
-                <input class="input-text size-L" type="text"
-               placeholder="验证码"   style="width:150px;" id="cat_action">
+                    <input class="input-text size-L" type="text"
+                           placeholder="验证码"   style="width:150px;" id="cat_action">
 
                     <img src="{:captcha_src()}" alt="captcha" id="cat" style="width: 200px;height: 50px;"/>
 
                 </div>
             </div>
             <div class="formControls col-xs-8 col-xs-offset-3">
-            <span id="span_cat"></span>
+                <span id="span_cat"></span>
             </div>
             <div class="row cl">
                 <div class="formControls col-xs-8 col-xs-offset-3">
@@ -74,41 +74,41 @@
 <script type="text/javascript" src="__STATIC__/lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="__STATIC__/static/h-ui/js/H-ui.js"></script>
 <script>
-$(document).ready(function(){
-     //验证码
-    $("#cat").click(function(){
-        this.src="{:captcha_src()}?"+Math.random();   //点击验证码自动刷新
+    $(document).ready(function(){
+        //验证码
+        $("#cat").click(function(){
+            this.src="{:captcha_src()}?"+Math.random();   //点击验证码自动刷新
+        });
+        //验证码 验证
+        $("#cat_action").blur(function(){
+            var code= $("#cat_action").val();
+            var user=$("#user").val();
+            var password=$("#password").val();
+            $.ajax({
+                type:'post',                             //ajax post传值
+                url:"{:url('login_action')}",
+                data:{
+                    code:code,
+                    user:user,
+                    password:password,
+                },
+                dataType:"json",                        //设置接值格式为json
+                success:function (res) {
+                    if (res.code=="0"){                 //登录成功判断
+                        location.href="{:url('index/index')}";
+                    }else{                              //失败判断
+                        $("#span_cat").css("color","red")
+                        $("#span_cat").html(res.message)
+                        $("#cat").attr("src","{:captcha_src()}?"+Math.random())
+                    }
+
+                }
+            })
+
+        });
+
+
     });
-    //验证码 验证
-    $("#cat_action").blur(function(){
-       var code= $("#cat_action").val();
-        var user=$("#user").val();
-        var password=$("#password").val();
-       $.ajax({
-           type:'post',                             //ajax post传值
-           url:"{:url('login_action')}",
-           data:{
-               code:code,
-               user:user,
-               password:password,
-           },
-           dataType:"json",                        //设置接值格式为json
-           success:function (res) {
-               if (res.code=="0"){                 //登录成功判断
-                   location.href="{:url('index/index')}";
-               }else{                              //失败判断
-                   $("#span_cat").css("color","red")
-                   $("#span_cat").html(res.message)
-                   $("#cat").attr("src","{:captcha_src()}?"+Math.random())
-               }
-
-           }
-       })
-
-    });
-
-
-});
 </script>
 
 <script>

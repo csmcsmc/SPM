@@ -54,7 +54,7 @@ return [
     // +----------------------------------------------------------------------
 
     // 默认模块名
-    'default_module'         => 'index',
+    'default_module'         => 'admin',
     // 禁止访问模块
     'deny_module_list'       => ['common'],
     // 默认控制器名
@@ -144,7 +144,7 @@ return [
     'exception_handle'       => '',
 
     'rbac' => [
-        'type' => 'jwt',    //验证方式 jwt(token方式)形式或者service(基于cookie)方式
+        'type' => 'service',    //验证方式 jwt(token方式)形式或者service(基于cookie)方式
         'db' => '',        //rbac要使用的数据库配置为空则为默认库(生成表的前缀依赖此配置)
         'salt_token' => 'asdfasfdafasf',    //token加密密钥
         'token_key' => 'Authorization'      //header中用于验证token的名称

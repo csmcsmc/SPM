@@ -4,7 +4,7 @@ use think\Controller;
 use think\captcha\Captcha;
 use think\Db;
 use think\facade\Session;
-
+use gmars\rbac\Rbac;
 class Login extends controller
 {
     public function login()               //登录展示页面
@@ -23,12 +23,14 @@ class Login extends controller
             echo $type;
             die;
         }else{                            //如果验证码正确则判断用户名密码
-            $sel=Db::table("admin_user")->where('a_user',$user)->where("a_password",$password)->find();
+            $sel=Db::table("user")->where('user_name',$user)->where("password",md5($password))->find();
             if ($sel==false){
                 $arr=["code"=>"2","status"=>"error","message"=>"用户名密码错误"];
             }else{
                 $arr=["code"=>"0","status"=>"success","message"=>"用户名密码正确"];
                 Session::set('name',$user);     //如果验证成功存session
+                $rbac = new Rbac();
+                $rbac->cachePermission($sel['id']);
             }
             $type=json_encode($arr);
             echo $type;
