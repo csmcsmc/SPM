@@ -29,6 +29,7 @@ class Login extends controller
             }else{
                 $arr=["code"=>"0","status"=>"success","message"=>"用户名密码正确"];
                 Session::set('name',$user);     //如果验证成功存session
+                Session::set('name_id',$sel['id']);
                 $rbac = new Rbac();
                 $rbac->cachePermission($sel['id']);
             }
@@ -39,7 +40,7 @@ class Login extends controller
     }
 
     public function  login_out(){
-        Session::clear();
+        Session::clear();         //清除所有Session
         $this->success("退出成功","login/login","1");
     }
 

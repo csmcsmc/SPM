@@ -15,8 +15,8 @@ class Permission extends Controller
      */
     public function index()
     {
-        $brand= new PermissionCateModel;
-        $arr=$brand->select();
+        $PermissionCate= new PermissionCateModel;
+        $arr=$PermissionCate->select();
         $a=json_decode($arr,true);
         $this->assign("cate",$a);
         return $this->fetch("permission/permission");
@@ -24,10 +24,10 @@ class Permission extends Controller
     public function add(){
         $name=input("name");
         $cateid=input("cateid");
-        $brand           = new PermissionModel;
-        $brand->name     = $name;
-        $brand->category_id     = $cateid;
-        $brand->save();
+        $Permission           = new PermissionModel;
+        $Permission->name     = $name;
+        $Permission->category_id     = $cateid;
+        $Permission->save();
     }
     public function showa(){
         $a=Db::query("select p.id,p.name,pc.name as pc_name from permission as p inner join permission_category as pc on p.category_id=pc.id");

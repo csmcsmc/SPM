@@ -6,5 +6,5 @@ use think\Model;
 
 class Permission extends Model
 {
-    protected $table="permission";
+
 }
