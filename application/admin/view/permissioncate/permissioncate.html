@@ -1,17 +1,20 @@
 {include file="header"}    <!--引入头部文件-->
 
 {include file="left"}       <!-- 引入左侧导航栏文件-->
+<link rel="stylesheet" href="__STATIC__/a.css">
 <section class="Hui-article-box">
     <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 管理员管理 <span class="c-gray en">&gt;</span> 权限分类管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
     <div class="Hui-article">
         <article class="cl pd-20">
             <div >
-
                 <div class="Huiform" method="post" action="" target="_self">
+                    <a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
                     <input type="text" placeholder="权限分类名称"  class="input-text" style="width:120px"  id="name">
                     <input type="text" placeholder="权限分类描述"  class="input-text" style="width:120px"  id="description">
+                    <input type="hidden" id="__token__" name="__token__" value="{$Request.token}" />
                     <button type="submit" class="btn btn-success" id="aaa" name=""><i class="Hui-iconfont">&#xe600;</i> 添加权限分类</button>
                     <span id="tips"></span>
+
                 </div>
             </div>
 
@@ -21,7 +24,9 @@
                     <th scope="col" colspan="7">权限节点</th>
                 </tr>
                 <tr class="text-c">
-                    <th width="25"><input type="checkbox" name="" value=""></th>
+                    <th width="25">
+                        <input type="checkbox" id="a">
+                    </th>
                     <th width="40">ID</th>
                     <th width="200">权限分类名称</th>
                     <th width="200">权限描述</th>
@@ -35,13 +40,41 @@
         </article>
     </div>
 </section>
+<!--修改时的弹出层页面展示-->
+<div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content radius">
+            <div class="modal-header">
+                <h3 class="modal-title" id="date">修改权限分类名称</h3>
+                <input type="text" id="upid" hidden>
+                <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+            </div>
+            <div class="modal-body">
+                修改权限分类名称：<input type="text" id="upname" placeholder="权限分类名称"  class="input-text" style="width:120px"  >
 
+            </div>
+
+            <div class="modal-body">
+                修改权限分类见描述：<input type="text" id="updescription" placeholder="权限分类描述"  class="input-text" style="width:120px"  >
+            </div>
+            <div class="modal-body">
+                <span id="ts"></span>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="update()">确定</button>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--弹出层-->
 {include file="foot"}       <!--引入底部导航栏文件-->
 <script>
     $(document).ready(function(){
         show();
 
-        $("#aaa").click(function(){
+        $("#aaa").click(function(){                     //添加
+            var __token__=$("#__token__").val();
             var name=$("#name").val();
             var description=$("#description").val();
             $.ajax({
@@ -50,6 +83,7 @@
                 data:{
                     name:name,
                     description:description,
+                    __token__:__token__,
                 },
                 dataType:"json",                        //设置接值格式为json
                 success:function (res) {
@@ -71,7 +105,7 @@
                         },3000);
                         $("#description").val("");
                     }
-
+                    token();
                 }
             })
 
@@ -79,7 +113,18 @@
 
     });
 
-    function show(){
+    function token() {          //写了一个专门执行token自动生成的方法
+        $.ajax({
+            type:'post',                             //ajax post传值
+            url:"{:url('Common/commonToken')}",
+            dataType:"json",                        //设置接值格式为json
+            success:function (res) {
+                var __token__=$("#__token__").val(res.token);
+            }
+        })
+    }
+
+    function show(){                  //展示页面
         $.ajax({
             type:'post',                             //ajax post传值
             url:"{:url('showa')}",
@@ -93,12 +138,10 @@
                 }else{
                     var status=res.status;
                     var message=res.message;
-                    console.log(status)
                     var tr='';
                     if (status=='ok') {
                         for (var i=0; i < message.length; i++){
-                            console.log(message[i].name)
-                            tr=tr+"<tr class='text-c'><td><input type=\"checkbox\" name=\"\" value=\"\"></td><td>"+message[i].id+"</td><td >"+message[i].name+"</td><td >"+message[i].description+"</td><td class='f-14 product-brand-manage'><a style='text-decoration:none'   title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a>                                              <a style='text-decoration:none' onclick='del("+message[i].id+")' class='ml-5'  title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
+                            tr=tr+"<tr class='text-c'>                               <td><input type='checkbox' id='b' value='"+message[i].id+"'></td>                             <td>"+message[i].id+"</td><td >"+message[i].name+"</td>                            <td >"+message[i].description+"</td>                                                  <td class='f-14 product-brand-manage'><a onClick="+"modaldemo("+message[i].id+",'"+message[i].name+"','"+message[i].description+"')"+" style='text-decoration:none' title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a>                                              <a style='text-decoration:none' onclick='del("+message[i].id+")' class='ml-5'  title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
                         }
                         $(".table tbody").html(tr);
                     }
@@ -107,7 +150,7 @@
         })
     }
 
-    function del(del_id) {
+    function del(del_id) {              //单删
         $.ajax({
             type:'post',
             url:"del",
@@ -122,6 +165,80 @@
             }
         })
     }
+
+    function modaldemo(id,name,description){   //修改弹窗
+        $("#modal-demo").modal("show");
+        $("#upid").val(id);
+        $("#upname").val(name);
+        $("#updescription").val(description);
+    }
+    function update() {              //修改
+        var id=$("#upid").val();     //接值
+        var name=$("#upname").val();
+        var description=$("#updescription").val();
+        $.ajax({
+            url:"{:url('update')}",
+            type:"post",
+            data:{
+                id:id,
+                name:name,
+                description:description,
+            },
+            dataType:"json",
+            success:function (res) {
+                if (res.status=="ok"){
+                    history.go(0)
+                }else if(res.status=="no"){
+                    $("#ts").html(res.message);
+                    $("#ts").css("color","red");
+                    setTimeout(function(){
+                        $("#ts").html("");
+                    },3000);
+                }
+            }
+        })
+    }
+
+    function datadel() {   //批量删除
+
+        var r = confirm("确认删除吗");
+        if (r == true) {
+            var a = $('#b:checked');
+            var id = "";
+            for (var i = 0; i < a.length; i++) {
+                id = id + "," + a[i].value;
+            }
+
+            $.ajax({
+                url: "{:url('datadel')}",
+                type: "post",
+                data: {
+                    id: id,
+                },
+                dataType: "json",
+                success: function (res) {
+                    if (res.status == "ok") {
+                        show();
+                    } else if (res.status == "no") {
+                        $("#tips").html(res.message);
+                        $("#tips").css("color", "red");
+                        setTimeout(function () {
+                            $("#tips").html("");
+                        }, 3000);
+                    }
+                }
+            })
+
+        }
+    }
+      //全选 和全不选
+    $(document).on('click','#a',function(){
+        if($(this).is(":checked")){
+            $('.b').prop('checked',true);
+        }else{
+            $('.b').prop('checked',false);
+        }
+    })
 
 
 </script>

@@ -5,7 +5,7 @@ namespace app\admin\controller;
 use think\Controller;
 use think\Request;
 
-class Role extends Common
+class User extends Common
 {
     /**
      * 显示资源列表
@@ -14,8 +14,10 @@ class Role extends Common
      */
     public function index()
     {
-        return $this->fetch("role/role");
+        return $this->fetch();
     }
+
+
 
 
 }

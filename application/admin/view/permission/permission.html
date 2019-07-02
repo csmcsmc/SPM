@@ -7,14 +7,16 @@
         <article class="cl pd-20">
             <div class="text-c">
                 <div class="Huiform" method="post" action="" target="_self">
+        <a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
                     <input type="text" class="input-text" style="width:250px" placeholder="权限分类名称" id="name" >
                     <select  id="cateid">
                         {volist name="cate" id="vo"}
-
                         <option value="{$vo.id}">{$vo.name}</option>
                         {/volist}
                     </select>
+                    <input type="text" name="__token__" value="{$Request.token}" />
                     <button type="submit" class="btn btn-success" id="aaa" name=""><i class="Hui-iconfont">&#xe600;</i> 添加权限分类</button>
+                    <span id="tips"></span>
                 </div>
             </div>
 
@@ -48,16 +50,33 @@
             var name=$("#name").val();
             var cateid=$("#cateid").val();
             $.ajax({
-                type:'post',                             //ajax post传值
+                                            //ajax post传值
                 url:"{:url('add')}",
                 data:{
+                    type:'post',
                     name:name,
                     cateid:cateid,
                     html_type:'json',
                 },
+                dataType:"json",
                 success:function (res) {
-                    show();
-                    $("#name").val("");
+                    if(res.status=="yes"){
+                        $("#tips").html(res.message);   //输出提示字样
+                        $("#tips").css("color","blue");  //字体颜色
+                        setTimeout(function(){          //3秒后消失
+                            $("#tips").html("");
+                        },3000);
+                        $("#name").val("");          //文本框置空
+                        show();                      //刷新页面
+                    }else if(res.status=="no"){
+                        $("#tips").html(res.message);
+                        $("#tips").css("color","red");
+                        $("#name").val("");
+                        setTimeout(function(){
+                            $("#tips").html("");
+                        },3000);
+                    }
+
 
 
                 }
@@ -65,14 +84,14 @@
 
         });
 
-
     });
 
     function show(){
         $.ajax({
-            type:'post',                             //ajax post传值
+                                      //ajax post传值
             url:"{:url('showa')}",
             data:{
+                type:'post',
                 html_type:'json',
             },
             dataType:"json",
@@ -82,12 +101,10 @@
                 }else{
                     var status=res.status;
                     var message=res.message;
-                    console.log(status)
                     var tr='';
                     if (status=='ok') {
                         for (var i=0; i < message.length; i++){
-                            console.log(message[i].name);
-                            tr=tr+"<tr class='text-c'><td><input type=\"checkbox\" name=\"\" value=\"\"></td><td>"+message[i].id+"</td><td class='text-l'>"+message[i].name+"</td><td>"+message[i].pc_name+"</td><td class='f-14 product-brand-manage'><a style='text-decoration:none'   title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a><a   style='text-decoration:none' onclick='del("+message[i].id+")' class='ml-5'  title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
+                            tr=tr+"<tr class='text-c'><td><input type='checkbox' class='ck' value='"+message[i].id+"'></td><td>"+message[i].id+"</td><td class='text-l' fd='"+message[i].id+"' oldname='"+message[i].name+"'><span class='sp'>"+message[i].name+"</span></td><td>"+message[i].pc_name+"</td><td class='f-14 product-brand-manage'><a style='text-decoration:none'   title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a><a   style='text-decoration:none' onclick='del("+message[i].id+")' class='ml-5'  title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
                         }
                         $(".table tbody").html(tr);
                     }
@@ -95,7 +112,39 @@
             }
         })
     }
+    //当标签是jq事件触发后产生的 $(document).on('click','.sp',function(){ 使用这个事件
+    //dblclick  鼠标双击事件
+    $(document).on('dblclick','.sp',function(){    //当span标签被点击是触发
+        var txt=$(this).text();                   //获取span标签里的 值
+        $(this).parent().html("<input class='as' type='text' value='"+txt+"' class='as'>");
+        $(".as").focus();  //给到input框的焦点
 
+    });
+    //极点及改 当鼠标移出事件
+    $(document).on('blur','.as',function(){
+        var val = $(this).val();              //当鼠标移出获取文本框里的值
+        var id =$(this).parents('td').attr('fd');//当鼠标移出获取文本框里的ID
+        //attr 是返回被选中的属性值
+        var oldname =$(this).parents('td').attr('oldname');
+        var obj=$(this);
+        $.ajax({
+            type: "post",
+            url: "{:url('upd')}",
+            data: {
+                type:'post',
+                val:val,
+                id:id,
+            },
+            dataType:"json",
+            success: function(msg){
+               if (msg.status=="yes"){
+                   obj.parent().html("<span class='sp'>"+val+"</span>");
+               } else if(msg.status=="no"){
+                   obj.parent().html("<span class='sp'>"+oldname+"</span>");
+               }
+            }
+        });
+    });
     function del(del_id) {
         $.ajax({
             type:'post',
@@ -111,7 +160,32 @@
             }
         })
     }
+     function datadel(){
+         var a = $('.ck:checked');  //获取被选中的文本框里的内容
+         var id = "";
+         for (var i = 0; i < a.length; i++) {  //循环获取被选中的文本框中的id
+             id = id + "," + a[i].value;
+         }
+         $.ajax({
+             url:"{:url('datadel')}",
+             data:{
+                 type:"post",
+                 id:id,
+             },
+             dataType:"json",
+             success:function(res){
+                 if(res.status=="yes"){
+                     show();
+                 }else if(res.status=="no"){
+                     $("#tips").html(res.message);
+                     $("#tips").css("color","red");
+                     setTimeout(function(){
+                         $("#tips").html("");
+                     },3000);
+                 }
+             }
 
-
+         })
+     }
 
 </script>

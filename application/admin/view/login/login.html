@@ -85,9 +85,10 @@
             var user=$("#user").val();
             var password=$("#password").val();
             $.ajax({
-                type:'post',                             //ajax post传值
+                                             //ajax post传值
                 url:"{:url('login_action')}",
                 data:{
+                    type:'post',
                     code:code,
                     user:user,
                     password:password,

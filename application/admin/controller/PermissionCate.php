@@ -5,7 +5,7 @@ use gmars\rbac\Rbac;
 use think\Controller;
 use think\Db;
 
-class PermissionCate extends Controller
+class PermissionCate extends Common
 {
     /**
      * 显示资源列表
@@ -58,6 +58,50 @@ class PermissionCate extends Controller
         if ($del==true){
             $arr=["status"=>"ok"];
             echo $b=json_encode($arr);
+        }
+    }
+    public function update(){
+        $data=input();           //判断输入框的值是否合法 类似正则  使用框架自带验证
+        $validate = new \app\admin\validate\permissioncate;
+        if (!$validate->check($data)) {
+            $acc=["code"=>"0","status"=>"no","message"=>$validate->getError()];
+            echo $b=json_encode($acc);
+            die;
+        }
+
+        $rbac=new Rbac();        //查询要修改的值是否重复
+        $sel=$rbac->getPermissionCategory([['name', '=', $data['name']]]);
+        if (empty($sel)){
+            $update=Db::name('permission_category')
+                ->where('id', $data['id'])
+                ->data(['name' => $data['name'],'description'=>$data['description']])
+                ->update();
+            if ($update==true){
+                $acc=["code"=>"0","status"=>"ok","message"=>"修改成功"];
+                echo $b=json_encode($acc);
+            }
+        }else{
+            $acc=["code"=>"0","status"=>"no","message"=>"该权限分类已存在"];
+            echo $b=json_encode($acc);
+
+        }
+    }
+
+    public function datadel(){
+         $id=input("id");
+         if (empty($id)){
+             $acc=["code"=>"0","status"=>"no","message"=>"未找到您要删除的信息！"];
+             echo $b=json_encode($acc);
+             die;
+         }
+         $arr=explode(",",$id);
+         array_shift($arr);
+        $rbac=new Rbac();
+        $del=$rbac->delPermissionCategory($arr);
+        if ($del==true){
+            $acc=["code"=>"0","status"=>"ok","message"=>"删除成功"];
+            echo $b=json_encode($acc);
+            die;
         }
     }
 }
