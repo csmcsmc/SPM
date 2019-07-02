@@ -172,7 +172,8 @@
         $("#upname").val(name);
         $("#updescription").val(description);
     }
-    function update() {              //修改
+    function update() {                     //修改
+        var __token__=$("#__token__").val();
         var id=$("#upid").val();     //接值
         var name=$("#upname").val();
         var description=$("#updescription").val();
@@ -182,6 +183,7 @@
             data:{
                 id:id,
                 name:name,
+                __token__:__token__,
                 description:description,
             },
             dataType:"json",
@@ -195,6 +197,7 @@
                         $("#ts").html("");
                     },3000);
                 }
+                token();
             }
         })
     }
