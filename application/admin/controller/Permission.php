@@ -69,14 +69,14 @@ class Permission extends Common
             $acc=["code"=>"0","status"=>"no","message"=>$validate->getError()];
             echo $b=json_encode($acc);
         }else{
-            $sel=Db::table('permission')->where('name',$data['val'])->find();
+            $sel=Db::table('permission')->where('name',$data['name'])->find();
             if (!empty($sel)){
                 $acc=["code"=>"0","status"=>"no","message"=>"修改的数据已存在！"];
                 echo $b=json_encode($acc);
             }else{
                 $up=Db::name('permission')
                     ->where('id', $data['id'])
-                    ->update(['name' =>$data['val']]);
+                    ->update(['name' =>$data['name']]);
                 if ($up==true){
                     $acc=["code"=>"0","status"=>"yes","message"=>"修改成功！"];
                     echo $b=json_encode($acc);

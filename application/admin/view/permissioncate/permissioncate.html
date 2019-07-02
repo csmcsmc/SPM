@@ -115,7 +115,6 @@
 
     function token() {          //写了一个专门执行token自动生成的方法
         $.ajax({
-            type:'post',                             //ajax post传值
             url:"{:url('Common/commonToken')}",
             dataType:"json",                        //设置接值格式为json
             success:function (res) {
@@ -222,6 +221,7 @@
                 success: function (res) {
                     if (res.status == "ok") {
                         show();
+                        $('#a').prop('checked',false);
                     } else if (res.status == "no") {
                         $("#tips").html(res.message);
                         $("#tips").css("color", "red");
@@ -242,6 +242,8 @@
             $('.b').prop('checked',false);
         }
     })
+
+
 
 
 </script>

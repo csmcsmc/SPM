@@ -13,7 +13,7 @@ class Permission extends Validate
      * @var array
      */	
 	protected $rule = [
-        'name'  => 'require|max:50|min:1',
+        'name'  => 'require|max:50|min:1|token',
     ];
     
     /**
