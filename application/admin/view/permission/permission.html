@@ -1,22 +1,19 @@
 {include file="header"}    <!--引入头部文件-->
 
 {include file="left"}       <!-- 引入左侧导航栏文件-->
+<link rel="stylesheet" href="__STATIC__/a.css">    <!--引入弹出层样式-->
 <section class="Hui-article-box">
     <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 管理员管理 <span class="c-gray en">&gt;</span> 权限分类管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
     <div class="Hui-article">
         <article class="cl pd-20">
-            <div class="text-c">
+            <div >
+
                 <div class="Huiform" method="post" action="" target="_self">
-        <a href="javascript:;"  onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
-                    <input type="text" class="input-text" style="width:250px" placeholder="权限分类名称" id="name" >
-                    <select  id="cateid">
-                        {volist name="cate" id="vo"}
-                        <option value="{$vo.id}">{$vo.name}</option>
-                        {/volist}
-                    </select>
+                    <a href="javascript:;"  onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+
+                    <a href="javascript:;" onClick="modaldemo()" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加权限</a>
                     <input type="hidden" id="__token__" name="__token__" value="{$Request.token}" />
-                    <button type="submit" class="btn btn-success" id="aaa" name=""><i class="Hui-iconfont">&#xe600;</i> 添加权限分类</button>
-                    <span id="tips"></span>
+                    <span id="ts"></span>
                 </div>
             </div>
 
@@ -26,10 +23,12 @@
                     <th scope="col" colspan="7">权限节点</th>
                 </tr>
                 <tr class="text-c">
-                    <th width="25"><input type="checkbox" id="a" value=""></th>
+                    <th width="25"><input type="checkbox" id="a" ></th>
                     <th width="40">ID</th>
                     <th width="200">权限分类名称</th>
-                    <th width="200">分类名称</th>
+                    <th width="200">权限描述</th>
+                    <th width="200">权限路径</th>
+                    <th width="200">权限分类</th>
                     <th width="100">操作</th>
                 </tr>
                 </thead>
@@ -40,46 +39,212 @@
         </article>
     </div>
 </section>
+<!--添加时的弹出层页面展示-->
+<div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content radius">
+            <div class="modal-header">
+                <h3 class="modal-title" id="date">添加权限信息</h3>
+                <input type="text" id="upid" hidden>
+                <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+            </div>
+            <div class="modal-body">
+                添加权限名称：<input type="text" id="name" placeholder="权限分类名称"  class="input-text" style="width:120px"  >
+
+            </div>
+            <div class="modal-body">
+                添加权限描述：<input type="text" id="description" placeholder="权限分类描述"  class="input-text" style="width:120px"  >
+            </div>
+            <div class="modal-body">
+                添加权限路径：<input type="text" id="path" placeholder="权限分类描述"  class="input-text" style="width:120px"  >
+            </div>
+            <div class="modal-body">
+                添加权限分组：
+                <select  id="cateid">
+                    {volist name="cate" id="vo"}
+                    <option  value="{$vo.id}">{$vo.name}</option>
+                    {/volist}
+                </select>
+            </div>
+
+            <div class="modal-body">
+                <span id="tips"></span>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="aaa">确定</button>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--弹出层-->
+
+<!--修改弹出层-->
+<div id="modal-demoa" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content radius">
+            <div class="modal-header">
+                <h3 class="modal-title" >修改权限信息</h3>
+                <input type="text" id="names" hidden >
+                <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+            </div>
+            <div class="modal-body">
+                修改权限名称：<input type="text" id="pname" placeholder="权限分类名称"  class="input-text" style="width:200px"  >
+
+            </div>
+            <div class="modal-body">
+                修改权限描述：<input type="text" id="pdescription" placeholder="权限分类描述"  class="input-text" style="width:200px"  >
+            </div>
+            <div class="modal-body">
+                修改权限路径：<input type="text" id="ppath" placeholder="权限分类描述"  class="input-text" style="width:200px"  >
+            </div>
+            <div class="modal-body">
+                修改权限分组：
+                <input type="text" hidden id="category_id">
+                <select  id="pcateid">
+
+                </select>
+            </div>
+
+            <div class="modal-body">
+                <span id="ptips"></span>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="upper">确定</button>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--修改弹出层-->
 
 {include file="foot"}       <!--引入底部导航栏文件-->
 <script>
+    function token() {          //写了一个专门执行token自动生成的方法
+        $.ajax({
+            url:"{:url('Common/commonToken')}",
+            success:function (res) {
+                var __token__=$("#__token__").val(res.token);
+            }
+        })
+    }
+    //添加弹出层代码
+    function modaldemo(){
+        $("#modal-demo").modal("show");
+    }
+
+    //修改弹出层
+    function modaldemoa(id,name,description,path,category_id){
+        $("#names").val(id);
+        $("#pname").val(name);
+        $("#pdescription").val(description);
+        $("#ppath").val(path);
+        $("#category_id").val(category_id);
+        cate();
+        $("#modal-demoa").modal("show");
+
+    }
+
+    function cate(){
+        var category_id=$("#category_id").val();
+        $.ajax({
+            url:"{:url('permission/cate')}",
+            dataType:"json",
+            success:function (res) {
+                var option="";
+                for (var i = 0;i<res.length;i++){
+                    if (category_id==res[i].id) {
+            option=option+"<option  selected='selected'  value='"+res[i].id+"'>"+res[i].name+"</option>";
+                    }else{
+            option=option+"<option  value='"+res[i].id+"'>"+res[i].name+"</option>";
+                    }
+
+                }
+                $("#pcateid").html(option);
+            }
+        })
+    }
+    //修改
+    $(document).on('click','#upper',function() {
+        var __token__=$("#__token__").val();
+        var id = $("#names").val();
+        var name = $("#pname").val();
+        var description = $("#pdescription").val();
+        var path = $("#ppath").val();
+        var category_id = $("#pcateid").val();
+        $.ajax({
+            url:"{:url('permission/upda')}",
+            data:{
+                type:'post',
+                __token__:__token__,
+                id:id,
+                name:name,
+                description:description,
+                path:path,
+                category_id:category_id,
+            },
+            success:function (res) {
+                if(res.status=="yes"){
+                    $("#pname").val("");
+                    $("#pdescription").val("");
+                    $("#ppath").val("");
+                    $("#modal-demoa").modal("hide");//关闭弹出层
+                    show();
+                }else if(res.status=="no"){
+                    $("#ptips").html(res.message);
+                    $("#ptips").css("color","red");
+                    $("#pname").val("");
+                    $("#pdescription").val("");
+                    $("#ppath").val("");
+                    setTimeout(function(){
+                        $("#ptips").html("");
+                    },3000);
+                }
+                token();
+            }
+        })
+
+    });
+
     $(document).ready(function(){
         show();
-
-        $("#aaa").click(function(){                      //添加
+        //添加
+        $("#aaa").click(function(){
             var __token__=$("#__token__").val();
             var name=$("#name").val();
-            var cateid=$("#cateid").val();
+            var description=$("#description").val();
+            var path=$("#path").val();
+            var cateid=$('#cateid').val();
+            //获取select里option的value
             $.ajax({
-                                            //ajax post传值
                 url:"{:url('add')}",
                 data:{
                     type:'post',
                     name:name,
                     cateid:cateid,
+                    description:description,
+                    path:path,
                     __token__:__token__,
                     html_type:'json',
                 },
-                dataType:"json",
                 success:function (res) {
                     if(res.status=="yes"){
-                        $("#tips").html(res.message);   //输出提示字样
-                        $("#tips").css("color","blue");  //字体颜色
-                        setTimeout(function(){          //3秒后消失
-                            $("#tips").html("");
-                        },3000);
-                        $("#name").val("");          //文本框置空
-                        show();                      //刷新页面
+                        $("#name").val("");
+                        $("#description").val("");
+                        $("#path").val("");
+                        $("#modal-demo").modal("hide");//关闭弹出层
+                        show();
                     }else if(res.status=="no"){
                         $("#tips").html(res.message);
                         $("#tips").css("color","red");
                         $("#name").val("");
+                        $("#description").val("");
+                        $("#path").val("");
                         setTimeout(function(){
                             $("#tips").html("");
                         },3000);
                     }
                     token();
-
                 }
             })
 
@@ -87,7 +252,8 @@
 
     });
 
-    function show(){                       //展示
+    //展示
+    function show(){
         $.ajax({
                                       //ajax post传值
             url:"{:url('showa')}",
@@ -95,7 +261,6 @@
                 type:'post',
                 html_type:'json',
             },
-            dataType:"json",
             success:function (res) {
                 if (res.status=="error"){
                     alert(res.message)
@@ -105,7 +270,7 @@
                     var tr='';
                     if (status=='ok') {
                         for (var i=0; i < message.length; i++){
-                            tr=tr+"<tr class='text-c'><td><input  type='checkbox' class='ck'  value='"+message[i].id+"'></td><td>"+message[i].id+"</td><td class='text-l' fd='"+message[i].id+"' oldname='"+message[i].name+"'><span class='sp'>"+message[i].name+"</span></td><td>"+message[i].pc_name+"</td><td class='f-14 product-brand-manage'><a style='text-decoration:none'   title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a><a   style='text-decoration:none' onclick='del("+message[i].id+")' class='ml-5'  title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
+                            tr=tr+"<tr class='text-c'><td><input  type='checkbox' class='ck'  value='"+message[i].id+"'></td><td>"+message[i].id+"</td><td  fd='"+message[i].id+"' oldname='"+message[i].name+"'><span class='sp'>"+message[i].name+"</span></td><td>"+message[i].description+"</td><td>"+message[i].path+"</td><td>"+message[i].pc_name+"</td><td class='f-14 product-brand-manage'><a onClick="+"modaldemoa("+message[i].id+",'"+message[i].name+"','"+message[i].description+"','"+message[i].path+"','"+message[i].category_id+"','"+message[i].pc_name+"')"+" style='text-decoration:none' title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a><a   style='text-decoration:none' onclick='del("+message[i].id+")' class='ml-5'  title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
                         }
                         $(".table tbody").html(tr);
                     }
@@ -138,7 +303,6 @@
                 id:id,
                 __token__:__token__,
             },
-            dataType:"json",
             success: function(msg){
                if (msg.status=="yes"){
                    obj.parent().html("<span class='sp'>"+val+"</span>");
@@ -149,48 +313,67 @@
             }
         });
     });
+
+
+
     function del(del_id) {                    //单删
+        var __token__=$("#__token__").val();
         $.ajax({
             type:'post',
             url:"del",
             data:{
                 del_id:del_id,
+                __token__:__token__,
             },
-            dataType:"json",
             success:function(res) {
                 if (res.status=="ok") {
                    show();
+                }else{
+                    $("#ts").html(res.message);
+                    $("#ts").css("color", "red");
+                    setTimeout(function () {
+                        $("#ts").html("");
+                    }, 3000);
                 }
+                token();
             }
         })
     }
-     function datadel(){                 //批量删除
-         var a = $('.ck:checked');  //获取被选中的文本框里的内容
-         var id = "";
-         for (var i = 0; i < a.length; i++) {  //循环获取被选中的文本框中的id
-             id = id + "," + a[i].value;
-         }
-         $.ajax({
-             url:"{:url('datadel')}",
-             data:{
-                 type:"post",
-                 id:id,
-             },
-             dataType:"json",
-             success:function(res){
-                 if(res.status=="yes"){
-                     $('#a').prop('checked',false);
-                     show();
-                 }else if(res.status=="no"){
-                     $("#tips").html(res.message);
-                     $("#tips").css("color","red");
-                     setTimeout(function(){
-                         $("#tips").html("");
-                     },3000);
-                 }
+    //批量删除
+     function datadel(){
+         var r = confirm("确认删除吗");
+         if (r == true) {
+             var a = $('.ck:checked');  //获取被选中的文本框里的内容
+             var __token__=$("#__token__").val();
+             var id = "";
+             for (var i = 0; i < a.length; i++) {  //循环获取被选中的文本框中的id
+                 id = id + "," + a[i].value;
              }
-
-         })
+             $.ajax({
+                 url: "{:url('datadel')}",
+                 data: {
+                     type: "post",
+                     del_id: id,
+                     __token__:__token__,
+                 },
+                 success: function (res) {
+                     if (res.status == "yes") {
+                         $('#a').prop('checked', false);
+                         show();
+                     } else if (res.status == "no") {
+                         $("#ts").html(res.message);
+                         $("#ts").css("color", "red");
+                         setTimeout(function () {
+                             $("#ts").html("");
+                         }, 3000);
+                     }
+                     token();
+                 }
+             })
+         }else{
+             $('#a').prop('checked',false);
+             $('.ck').prop('checked',false);
+         }
      }
 
     //全选 和全不选
@@ -202,15 +385,6 @@
         }
     })
 
-    function token() {          //写了一个专门执行token自动生成的方法
-        $.ajax({
-            url:"{:url('Common/commonToken')}",
-            dataType:"json",                        //设置接值格式为json
-            success:function (res) {
-                var __token__=$("#__token__").val(res.token);
-            }
-        })
-    }
 
 
 </script>

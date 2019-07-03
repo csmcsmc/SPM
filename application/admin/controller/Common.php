@@ -16,7 +16,7 @@ class Common extends Controller
     {
         $token = $this->request->token('__token__', 'sha1');
         $acc=["token"=>$token];
-        echo $b=json_encode($acc);
+        return json($acc);
     }
 
 }
