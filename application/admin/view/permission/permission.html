@@ -56,7 +56,7 @@
                 添加权限描述：<input type="text" id="description" placeholder="权限分类描述"  class="input-text" style="width:120px"  >
             </div>
             <div class="modal-body">
-                添加权限路径：<input type="text" id="path" placeholder="权限分类描述"  class="input-text" style="width:120px"  >
+                添加权限路径：<input type="text" id="path" placeholder="权限分类描述"  class="input-text" style="width:200px"  >
             </div>
             <div class="modal-body">
                 添加权限分组：
@@ -77,12 +77,13 @@
         </div>
     </div>
 </div>
-<!--弹出层-->
+<!--添加弹出层-->
 
 <!--修改弹出层-->
 <div id="modal-demoa" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content radius">
+
             <div class="modal-header">
                 <h3 class="modal-title" >修改权限信息</h3>
                 <input type="text" id="names" hidden >
@@ -120,7 +121,8 @@
 
 {include file="foot"}       <!--引入底部导航栏文件-->
 <script>
-    function token() {          //写了一个专门执行token自动生成的方法
+    //写了一个专门执行token自动生成的方法
+    function token() {
         $.ajax({
             url:"{:url('Common/commonToken')}",
             success:function (res) {
@@ -132,7 +134,6 @@
     function modaldemo(){
         $("#modal-demo").modal("show");
     }
-
     //修改弹出层
     function modaldemoa(id,name,description,path,category_id){
         $("#names").val(id);
@@ -144,7 +145,7 @@
         $("#modal-demoa").modal("show");
 
     }
-
+    //修改弹出层的select 下拉框里循环展示权限分组信息
     function cate(){
         var category_id=$("#category_id").val();
         $.ajax({
@@ -252,7 +253,7 @@
 
     });
 
-    //展示
+    //数据展示
     function show(){
         $.ajax({
                                       //ajax post传值
@@ -278,15 +279,15 @@
             }
         })
     }
-    //当标签是jq事件触发后产生的 $(document).on('click','.sp',function(){ 使用这个事件
-    //dblclick  鼠标双击事件
+
+    //dblclick  即点即改，鼠标双击事件
     $(document).on('dblclick','.sp',function(){    //当span标签被点击是触发
         var txt=$(this).text();                   //获取span标签里的 值
         $(this).parent().html("<input class='as' type='text' value='"+txt+"' class='as'>");
         $(".as").focus();  //给到input框的焦点
 
     });
-    //极点及改 当鼠标移出事件
+    //即点即改 当鼠标移出事件
     $(document).on('blur','.as',function(){            //修改
         var val = $(this).val();              //当鼠标移出获取文本框里的值
         var id =$(this).parents('td').attr('fd');//当鼠标移出获取文本框里的ID
@@ -315,7 +316,7 @@
     });
 
 
-
+    //单删
     function del(del_id) {                    //单删
         var __token__=$("#__token__").val();
         $.ajax({
@@ -384,7 +385,5 @@
             $('.ck').prop('checked',false);
         }
     })
-
-
 
 </script>

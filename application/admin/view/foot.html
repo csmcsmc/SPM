@@ -25,3 +25,13 @@
 <!--/此乃百度统计代码，请自行删除-->
 </body>
 </html>
+<script>
+    function token() {
+        $.ajax({
+            url:"{:url('Common/commonToken')}",
+            success:function (res) {
+                var __token__=$("#__token__").val(res.token);
+            }
+        })
+    }
+</script>

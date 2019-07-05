@@ -82,7 +82,7 @@
 
     $(document).ready(function(){
         show();
-
+        //添加
         $("#aaa").click(function(){                     //添加
             var __token__=$("#__token__").val();
             var name=$("#name").val();
@@ -124,8 +124,8 @@
     });
 
 
-
-    function show(){                  //展示页面
+    //展示页面
+    function show(){
         $.ajax({
             type:'post',                             //ajax post传值
             url:"{:url('showa')}",
@@ -150,8 +150,8 @@
             }
         })
     }
-
-    function del(del_id) {              //单删
+    //单删
+    function del(del_id) {
         $.ajax({
             type:'post',
             url:"del",
@@ -166,14 +166,15 @@
             }
         })
     }
-
-    function modaldemo(id,name,description){   //修改弹窗
+    //修改弹窗
+    function modaldemo(id,name,description){
         $("#modal-demo").modal("show");
         $("#upid").val(id);
         $("#upname").val(name);
         $("#updescription").val(description);
     }
-    function update() {                     //修改
+    //修改
+    function update() {
         var __token__=$("#__token__").val();
         var id=$("#upid").val();     //接值
         var name=$("#upname").val();
@@ -203,8 +204,8 @@
             }
         })
     }
-
-    function datadel() {   //批量删除
+    //批量删除
+    function datadel() {
 
         var r = confirm("确认删除吗");
         if (r == true) {

@@ -1,0 +1,103 @@
+
+{include file="header"}    <!--引入头部文件-->
+
+{include file="left"}       <!-- 引入左侧导航栏文件-->
+<body>
+<article class="cl pd-20">
+    <div  class="form form-horizontal" id="form-admin-role-add">
+
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">
+                <span class="c-red">*</span>角色名称：</label>
+            <input type="hidden" id="__token__" name="__token__" value="{$Request.token}" />
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="" placeholder="" id="name" name="roleName" datatype="*4-16" nullmsg="用户账户不能为空">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">备注：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="" placeholder="" id="description" name="">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">网站角色：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+
+                <dl class="permission-list">
+                    <!--展示信息-->
+                </dl>
+            </div>
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <button  class="btn btn-success radius" id="sub" name="admin-role-save"><i class="icon-ok"></i> 确定</button>
+                <span id="tips"></span>
+            </div>
+        </div>
+    </div>
+</article>
+{include file="foot"}       <!--引入底部导航栏文件-->
+<script>
+    $.ajax({
+        url:"{:url('show')}",
+        success:function (res) {
+            var sum=res.status;
+            var dl='';
+            $.each(sum,function (k,v) {
+                dl=dl+"<dt><label class='' style='color:blue'>"+k+"</label></dt><dd><dl class='c1 permission-list2'>";
+                $.each(v,function (ka,va) {
+                    dl=dl+"<label class=''><input type='checkbox' class='mycheckbox' value='"+va['id']+"'>"+va['name']+"</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                })
+                dl=dl+"</dd>";
+            });
+            $(".permission-list").html(dl);
+        }
+    })
+
+    $("#sub").click(function () {
+        var name=$("#name").val();
+        var description=$("#description").val();
+        var pe_id=$(".mycheckbox:checked");
+        var __token__=$("#__token__").val();
+        var permission_id='';
+        for (var i=0;i<pe_id.length;i++){
+            permission_id=permission_id+','+pe_id[i].value;
+
+        }
+        $.ajax({
+            url:"{:url('addaction')}",
+            data:{
+                name:name,
+                description:description,
+                __token__:__token__,
+                permission_id:permission_id,
+            },
+            success:function (res) {
+                console.log(res);
+                if(res.status=="yes"){
+                    $("#name").val("");
+                    $("#description").val("");
+                    $('.mycheckbox').prop('checked',false);
+                    $("#tips").html(res.message);
+                    $("#tips").css("color","red");
+                    setTimeout(function(){
+                        $("#tips").html("");
+                    },3000);
+                }else if(res.status=="no"){
+                    $("#tips").html(res.message);
+                    $("#tips").css("color","red");
+                    $("#name").val("");
+                    $("#description").val("");
+                    $('.mycheckbox').prop('checked',false);
+                    setTimeout(function(){
+                        $("#tips").html("");
+                    },3000);
+                }
+                token();
+            }
+        })
+
+    })
+</script>

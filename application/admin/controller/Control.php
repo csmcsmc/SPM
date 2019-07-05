@@ -7,7 +7,8 @@ class Control extends Common
     {
         $this->fetch();
     }
-    public function savePermissionCategoryAddAction()//Permission_Category权限分类表添加数据
+    public function savePermissionCategoryAddAction()
+        //Permission_Category权限分类表添加数据
     {
         $rbac = new Rbac();
         $rbac->savePermissionCategory([

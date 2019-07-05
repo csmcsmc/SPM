@@ -108,7 +108,7 @@ class Permission extends Common
     }
 
 
-    public function upda(){     //弹出层的修改方法  
+    public function upda(){     //弹出层的修改方法
         $data=input();
         $validate = new \app\admin\validate\Permission;
 
