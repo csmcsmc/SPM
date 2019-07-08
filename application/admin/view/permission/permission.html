@@ -121,15 +121,34 @@
 
 {include file="foot"}       <!--引入底部导航栏文件-->
 <script>
-    //写了一个专门执行token自动生成的方法
-    function token() {
+    //数据展示
+    function show(){
         $.ajax({
-            url:"{:url('Common/commonToken')}",
+            //ajax post传值
+            url:"{:url('showa')}",
+            data:{
+                type:'post',
+                html_type:'json',
+            },
+            dataType:'json',
             success:function (res) {
-                var __token__=$("#__token__").val(res.token);
+                if (res.status=="error"){
+                    alert(res.message)
+                }else{
+                    var status=res.status;
+                    var message=res.message;
+                    var tr='';
+                    if (status=='ok') {
+                        for (var i=0; i < message.length; i++){
+                            tr=tr+"<tr class='text-c'><td><input  type='checkbox' class='ck'  value='"+message[i].id+"'></td><td>"+message[i].id+"</td><td  fd='"+message[i].id+"' oldname='"+message[i].name+"'><span class='sp'>"+message[i].name+"</span></td><td>"+message[i].description+"</td><td>"+message[i].path+"</td><td>"+message[i].pc_name+"</td><td class='f-14 product-brand-manage'><a onClick="+"modaldemoa("+message[i].id+",'"+message[i].name+"','"+message[i].description+"','"+message[i].path+"','"+message[i].category_id+"')"+" style='text-decoration:none' title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a><a   style='text-decoration:none' onclick='del("+message[i].id+")' class='ml-5'  title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
+                        }
+                        $(".table tbody").html(tr);
+                    }
+                }
             }
         })
     }
+
     //添加弹出层代码
     function modaldemo(){
         $("#modal-demo").modal("show");
@@ -174,7 +193,7 @@
         var path = $("#ppath").val();
         var category_id = $("#pcateid").val();
         $.ajax({
-            url:"{:url('permission/upda')}",
+            url:"{:url('permission/update')}",
             data:{
                 type:'post',
                 __token__:__token__,
@@ -184,6 +203,7 @@
                 path:path,
                 category_id:category_id,
             },
+            dataType:'json',
             success:function (res) {
                 if(res.status=="yes"){
                     $("#pname").val("");
@@ -228,6 +248,7 @@
                     __token__:__token__,
                     html_type:'json',
                 },
+                dataType:'json',
                 success:function (res) {
                     if(res.status=="yes"){
                         $("#name").val("");
@@ -253,32 +274,7 @@
 
     });
 
-    //数据展示
-    function show(){
-        $.ajax({
-                                      //ajax post传值
-            url:"{:url('showa')}",
-            data:{
-                type:'post',
-                html_type:'json',
-            },
-            success:function (res) {
-                if (res.status=="error"){
-                    alert(res.message)
-                }else{
-                    var status=res.status;
-                    var message=res.message;
-                    var tr='';
-                    if (status=='ok') {
-                        for (var i=0; i < message.length; i++){
-                            tr=tr+"<tr class='text-c'><td><input  type='checkbox' class='ck'  value='"+message[i].id+"'></td><td>"+message[i].id+"</td><td  fd='"+message[i].id+"' oldname='"+message[i].name+"'><span class='sp'>"+message[i].name+"</span></td><td>"+message[i].description+"</td><td>"+message[i].path+"</td><td>"+message[i].pc_name+"</td><td class='f-14 product-brand-manage'><a onClick="+"modaldemoa("+message[i].id+",'"+message[i].name+"','"+message[i].description+"','"+message[i].path+"','"+message[i].category_id+"','"+message[i].pc_name+"')"+" style='text-decoration:none' title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a><a   style='text-decoration:none' onclick='del("+message[i].id+")' class='ml-5'  title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
-                        }
-                        $(".table tbody").html(tr);
-                    }
-                }
-            }
-        })
-    }
+
 
     //dblclick  即点即改，鼠标双击事件
     $(document).on('dblclick','.sp',function(){    //当span标签被点击是触发
@@ -304,6 +300,7 @@
                 id:id,
                 __token__:__token__,
             },
+            dataType:'json',
             success: function(msg){
                if (msg.status=="yes"){
                    obj.parent().html("<span class='sp'>"+val+"</span>");
@@ -321,13 +318,14 @@
         var __token__=$("#__token__").val();
         $.ajax({
             type:'post',
-            url:"del",
+            url:"datadel",
             data:{
                 del_id:del_id,
                 __token__:__token__,
             },
+            dataType:'json',
             success:function(res) {
-                if (res.status=="ok") {
+                if (res.status=="yes") {
                    show();
                 }else{
                     $("#ts").html(res.message);
@@ -346,9 +344,9 @@
          if (r == true) {
              var a = $('.ck:checked');  //获取被选中的文本框里的内容
              var __token__=$("#__token__").val();
-             var id = "";
+             var id = [];
              for (var i = 0; i < a.length; i++) {  //循环获取被选中的文本框中的id
-                 id = id + "," + a[i].value;
+                 id.push(a[i].value);
              }
              $.ajax({
                  url: "{:url('datadel')}",
@@ -357,6 +355,7 @@
                      del_id: id,
                      __token__:__token__,
                  },
+                 dataType:'json',
                  success: function (res) {
                      if (res.status == "yes") {
                          $('#a').prop('checked', false);

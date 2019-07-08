@@ -65,23 +65,6 @@ class Permission extends Common
         return json($acc);
     }
 
-    public function del(){       //删除方法
-        $data=input();
-        $validate = new \app\admin\validate\Delete;
-
-        if (!$validate->check($data)) {
-            $acc=["code"=>"0","status"=>"no","message"=>$validate->getError()];
-            return json($acc);
-        }else{
-            $del=Db::table('permission')->where('id',$data['del_id'])->delete();
-            if ($del==true){
-                $arr=["status"=>"ok"];
-                return json($arr);
-            }
-        }
-
-    }
-
     public function upd(){     //权限名称的即点即改修改方法
         $data=input();
         $validate = new \app\admin\validate\Permission;
@@ -108,7 +91,7 @@ class Permission extends Common
     }
 
 
-    public function upda(){     //弹出层的修改方法
+    public function update(){     //弹出层的修改方法
         $data=input();
         $validate = new \app\admin\validate\Permission;
 
@@ -116,34 +99,28 @@ class Permission extends Common
             $acc=["code"=>"0","status"=>"no","message"=>$validate->getError()];
             return json($acc);
         }else{
-
+            $id=$data['id'];
             $name=$data['name'];
             $path=$data['path'];
-            $sel=DB::query("select * from permission where name='$name' or path='$path'");
-            if (empty($sel)){
-                $up=Db::name('permission')
-                    ->where('id', $data['id'])
-                    ->update(['name' =>$data['name'],'category_id'=>$data['category_id'], 'path'=>$data['path'],
-   'description'=>$data['description']]);
-                if ($up==true){
-                    $acc=["code"=>"0","status"=>"yes","message"=>"修改成功！"];
-                    return json($acc);
-                }
+            $sel=DB::query("select * from permission where id!='$id' and name='$name'");
+            $selb=DB::query("select * from permission where id!='$id' and path='$path'");
+            if (empty($sel)&&empty($selb)){
+                    $up=Db::name('permission')
+                        ->where('id', $id)
+                        ->update(['name' =>$name,'category_id'=>$data['category_id'], 'path'=>$path,
+                            'description'=>$data['description']]);
+                    if ($up==true){
+                        $acc=["code"=>"0","status"=>"yes","message"=>"修改成功！"];
+                        return json($acc);
+                    }
             }else{
-                    foreach ($sel as $k=>$v){
-                        if ($v['id']!=$data['id']){
-                            $acc=["code"=>"1","status"=>"no","message"=>"您要修改的权限名称或路径已存在！"];
-                            return json($acc);
-                        }else{
-                            $up=Db::name('permission')
-                                ->where('id', $data['id'])
-                                ->update(['name' =>$data['name'],'category_id'=>$data['category_id'], 'path'=>$data['path'],
-                                    'description'=>$data['description']]);
-                            if ($up==true){
-                                $acc=["code"=>"0","status"=>"yes","message"=>"修改成功！"];
-                                return json($acc);
-                            }
-                        }
+                    if (!empty($sel)){
+                        $acc=["code"=>"1","status"=>"no","message"=>"您要修改的权限名称已存在！"];
+                        return json($acc);
+                    }
+                    if (!empty($selb)){
+                        $acc=["code"=>"1","status"=>"no","message"=>"您要修改的权限路径已存在！"];
+                        return json($acc);
                     }
             }
 
@@ -153,15 +130,17 @@ class Permission extends Common
 
     public function datadel(){      //批量删除方法
         $data=input();
+        $id=$data['del_id'];
         $validate = new \app\admin\validate\Delete;
         if (!$validate->check($data)) {
             $acc=["code"=>"0","status"=>"no","message"=>$validate->getError()];
             return json($acc);
         }else{
-            $arr=explode(",",$data['del_id']);
-            array_shift($arr);
-            $rbac=new Rbac();
-            $del=$rbac->delPermission($arr);
+            if(is_array($id)){
+                implode(',',$id);
+            }
+
+            $del = Db::table('permission')->where('id', 'in', $id)->delete();
             if ($del==true){
                 $acc=["code"=>"0","status"=>"yes","message"=>"删除成功！"];
                 return json($acc);

@@ -5,7 +5,7 @@ use gmars\rbac\Rbac;
 use think\Controller;
 use think\Db;
 
-class PermissionCate extends Common
+class Permissioncate extends Common
 {
     /**
      * 显示资源列表
@@ -14,7 +14,7 @@ class PermissionCate extends Common
      */
     public function index()
     {
-        return $this->fetch("permissioncate/permissioncate");
+        return $this->fetch("Permissioncate/Permissioncate");
     }
 
     public function add(){       //添加权限分类
@@ -26,11 +26,11 @@ class PermissionCate extends Common
             die;
         }
         $rbac=new Rbac();
-        $a=$rbac->getPermissionCategory([['name', '=', $data['name']]]);
+        $a=$rbac->getPermissioncategory([['name', '=', $data['name']]]);
         //使用RBSC查询分类名是否存在数据库
 
         if (empty($a)){                      //判断如果数据库没有才能添加
-            $rbac->savePermissionCategory([
+            $rbac->savePermissioncategory([
                 'name' => $data['name'],
                 'description' => $data['description'],
                 'status' => 1
@@ -52,14 +52,7 @@ class PermissionCate extends Common
         $acc=["code"=>"0","status"=>"ok","message"=>$a];
         echo $b=json_encode($acc);
     }
-    public function del(){          //删除选中分类
-        $id=input("del_id");
-        $del=Db::table('permission_category')->where('id',$id)->delete();
-        if ($del==true){
-            $arr=["status"=>"ok"];
-            echo $b=json_encode($arr);
-        }
-    }
+
     public function update(){
         $data=input();           //判断输入框的值是否合法 类似正则  使用框架自带验证
         $validate = new \app\admin\validate\permissioncate;
@@ -88,16 +81,19 @@ class PermissionCate extends Common
     }
 
     public function datadel(){
-         $id=input("id");
-         if (empty($id)){
-             $acc=["code"=>"0","status"=>"no","message"=>"未找到您要删除的信息！"];
-             echo $b=json_encode($acc);
-             die;
-         }
-         $arr=explode(",",$id);
-         array_shift($arr);
+        $data=input();
+        $id=input("del_id");
+        $validate = new \app\admin\validate\Delete;
+        if (!$validate->check($data)) {
+            $acc = ["code" => "0", "status" => "no", "message" => $validate->getError()];
+            return json($acc);
+        }
+        if (!is_array($id)){
+            $id=explode(",",$id);
+        }
+
         $rbac=new Rbac();
-        $del=$rbac->delPermissionCategory($arr);
+        $del=$rbac->delPermissionCategory($id);
         if ($del==true){
             $acc=["code"=>"0","status"=>"ok","message"=>"删除成功"];
             echo $b=json_encode($acc);

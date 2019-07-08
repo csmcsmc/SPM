@@ -1,6 +1,7 @@
 {include file="header"}    <!--引入头部文件-->
 
 {include file="left"}       <!-- 引入左侧导航栏文件-->
+<link rel="stylesheet" href="__STATIC__/a.css">    <!--引入弹出层样式-->
 <section class="Hui-article-box">
     <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页
         <span class="c-gray en">&gt;</span>
@@ -9,7 +10,7 @@
         管理员列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a> </nav>
     <div class="Hui-article">
         <article class="cl pd-20">
-
+            <input type="hidden" id="__token__" name="__token__" value="{$Request.token}" />
 
             <div class="text-c"> 日期范围：
                 <input type="text"  id="datemin" class="input-text Wdate" style="width:120px;">
@@ -21,7 +22,8 @@
 
 
             <div class="cl pd-5 bg-1 bk-gray mt-20">
-                <span class="l"> <a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> <a href="javascript:;" onclick="admin_add('添加管理员','admin-add.html','800','500')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加管理员</a> </span>
+                <span class="l"> <a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> <a href="javascript:;" onclick="modaldemoa()" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加管理员</a> </span>
+                <span id="ts"></span>
                 <span class="r">共有数据：<strong>54</strong> 条</span>
             </div>
             <table class="table table-border table-bordered table-bg">
@@ -34,40 +36,357 @@
                     <th width="40">ID</th>
                     <th width="150">登录名</th>
                     <th width="90">手机</th>
-                    <th width="150">邮箱</th>
                     <th>角色</th>
-                    <th width="130">加入时间</th>
+                    <th width="130">最后一次登录时间</th>
                     <th width="100">是否已启用</th>
                     <th width="100">操作</th>
                 </tr>
                 </thead>
-                <tbody>
-                <tr class="text-c">
-                    <td><input type="checkbox" value="1" name=""></td>
-                    <td>1</td>
-                    <td>admin</td>
-                    <td>13000000000</td>
-                    <td>admin@mail.com</td>
-                    <td>超级管理员</td>
-                    <td>2014-6-11 11:11:42</td>
-                    <td class="td-status"><span class="label label-success radius">已启用</span></td>
-                    <td class="td-manage"><a style="text-decoration:none" onClick="admin_stop(this,'10001')" href="javascript:;" title="停用"><i class="Hui-iconfont">&#xe631;</i></a> <a title="编辑" href="javascript:;" onclick="admin_edit('管理员编辑','admin-add.html','1','800','500')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a> <a title="删除" href="javascript:;" onclick="admin_del(this,'1')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a></td>
-                </tr>
-                <tr class="text-c">
-                    <td><input type="checkbox" value="2" name=""></td>
-                    <td>2</td>
-                    <td>zhangsan</td>
-                    <td>13000000000</td>
-                    <td>admin@mail.com</td>
-                    <td>栏目编辑</td>
-                    <td>2014-6-11 11:11:42</td>
-                    <td class="td-status"><span class="label radius">已停用</span></td>
-                    <td class="td-manage"><a style="text-decoration:none" onClick="admin_start(this,'10001')" href="javascript:;" title="启用"><i class="Hui-iconfont">&#xe615;</i></a> <a title="编辑" href="javascript:;" onclick="admin_edit('管理员编辑','admin-add.html','2','800','500')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a> <a title="删除" href="javascript:;" onclick="admin_del(this,'1')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a></td>
-                </tr>
+                <tbody id="show">
+
+
                 </tbody>
             </table>
         </article>
     </div>
 </section>
+<!--添加弹出层-->
+<div id="modal-demoa" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content radius">
+        <div class="modal-header">
+            <h3 class="modal-title">对话框标题</h3>
+            <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+        </div>
+        <div class="modal-body">
+            <article class="page-container">
+                <form class="form form-horizontal" id="form-admin-add1">
+                    <div class="row cl">
+                        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>管理员：</label>
+                        <div class="formControls col-xs-8 col-sm-9">
+                            <input type="text" class="input-text"  placeholder="账户名称：" id="adminName" name="adminName">
+                        </div>
+                    </div>
+
+                    <div class="row cl">
+                        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>初始密码：</label>
+                        <div class="formControls col-xs-8 col-sm-9">
+                            <input type="password" class="input-text" autocomplete="off" value="" placeholder="密码" id="password" name="password">
+                        </div>
+                    </div>
+
+                    <div class="row cl">
+                        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>手机：</label>
+                        <div class="formControls col-xs-8 col-sm-9">
+                            <input type="text" maxlength="11" class="input-text"  placeholder="手机号：" id="phone" name="phone"  >
+                        </div>
+                    </div>
+
+
+                    <div class="row cl">
+                        <label class="form-label col-xs-4 col-sm-3">角色：</label>
+                        <div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:150px;">
+                <select class="select" id="Role" name="adminRole" size="1">
+
+                         <!--添加时选择角色的下拉-->
+
+				</select>
+ 							</span> </div>
+                    </div>　　
+                </form>
+            </article>
+        </div>
+        <div class="modal-footer">
+            <span id="tips"></span>
+            <button class="btn btn-primary" onclick="add()" >确定</button>
+            <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+        </div>
+    </div>
+</div>
+</div>
+<!--添加弹出层-->
+
+<!--修改弹出层-->
+<div id="upmodal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content radius">
+            <div class="modal-header">
+                <h3 class="modal-title">对话框标题</h3>
+                <span id="idd"></span>
+                <a class="close" data-dismiss="modal" aria-hidden="true" >×</a>
+            </div>
+            <div class="modal-body">
+                <article class="page-container">
+                    <form class="form form-horizontal" id="form-admin-add">
+                        <div class="row cl">
+                            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>管理员：</label>
+                            <div class="formControls col-xs-8 col-sm-9">
+                                <input type="text" class="input-text"  placeholder="账户名称：" id="upadminName" name="adminName">
+                            </div>
+                        </div>
+
+                        <div class="row cl">
+                            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>初始密码：</label>
+                            <div class="formControls col-xs-8 col-sm-9">
+                                <input type="password" class="input-text" autocomplete="off" value="" placeholder="密码" id="uppassword" name="password">
+                            </div>
+                        </div>
+
+                        <div class="row cl">
+                            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>手机：</label>
+                            <div class="formControls col-xs-8 col-sm-9">
+                                <input type="text" maxlength="11" class="input-text"  placeholder="手机号：" id="upphone" name="phone"  >
+                            </div>
+                        </div>
+
+
+                        <div class="row cl">
+                            <label class="form-label col-xs-4 col-sm-3">角色：</label>
+                            <div class="formControls col-xs-8 col-sm-9">
+                <select class="upselect" id="upRole" name="adminRole" size="1">
+
+                         <!--添加时选择角色的下拉-->
+
+				</select>
+ 							 </div>
+                        </div>　　
+                    </form>
+                </article>
+            </div>
+            <div class="modal-footer">
+                <span id="uptips"></span>
+                <button class="btn btn-primary" onclick="upda()" >确定</button>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--修改弹出层-->
 
 {include file="foot"}       <!--引入底部导航栏文件-->
+
+<script>
+    show();
+    /*首页展示*/
+    function show(){
+        $.ajax({
+            url:"{:url('show')}",
+            success:function (res) {
+                var arr=res.data;
+                var tr="";
+                for (var i=0;i<arr.length;i++){
+                    tr=tr+"<tr class='text-c'>";
+                    tr=tr+"<td><input type='checkbox' value='"+arr[i].u_id+"' class='che'></td>";
+                    tr=tr+"<td>"+arr[i].u_id+"</td>";
+                    tr=tr+"<td>"+arr[i].user_name+"</td>";
+                    tr=tr+"<td>"+arr[i].mobile+"</td>";
+                    tr=tr+"<td>"+arr[i].name+"</td>";
+                    tr=tr+"<td>"+arr[i].last_login_time+"</td>";
+                    tr=tr+"<td class='td-status'><span class='label radius'>已停用</span></td>";
+                    tr=tr+"<td class='td-manage'><a style='text-decoration:none' onClick=admin_start(this,'10001') href='javascript:;' title='启用'><i class='Hui-iconfont'>&#xe615;</i></a> <a title='编辑'                          onclick="+"modaldemo('"+arr[i].u_id+"','"+arr[i].user_name+"','"+arr[i].mobile+"','"+arr[i].r_id+"')"+"   class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6df;</i></a> <a title='删除' href='javascript:;' onclick="+"admin_del('"+arr[i].u_id+"')"+" class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6e2;</i></a></td>";
+                    tr=tr+"</tr>";
+
+                }
+                $("#show").html(tr);
+
+            }
+        })
+    }
+    /*管理员-禁用*/
+    function admin_stop(obj,id){
+        layer.confirm('确认要停用吗？',function(index){
+            //此处请求后台程序，下方是成功后的前台处理……
+
+            $(obj).parents("tr").find(".td-manage").prepend('<a onClick="admin_start(this,id)" href="javascript:;" title="启用" style="text-decoration:none"><i class="Hui-iconfont">&#xe615;</i></a>');
+            $(obj).parents("tr").find(".td-status").html('<span class="label label-default radius">已禁用</span>');
+            $(obj).remove();
+            layer.msg('已停用!',{icon: 5,time:1000});
+        });
+    }
+    /*管理员-启用*/
+    function admin_start(obj,id){
+        layer.confirm('确认要启用吗？',function(index){
+            //此处请求后台程序，下方是成功后的前台处理……
+            $(obj).parents("tr").find(".td-manage").prepend('<a onClick="admin_stop(this,id)" href="javascript:;" title="停用" style="text-decoration:none"><i class="Hui-iconfont">&#xe631;</i></a>');
+            $(obj).parents("tr").find(".td-status").html('<span class="label label-success radius">已启用</span>');
+            $(obj).remove();
+            layer.msg('已启用!', {icon: 6,time:1000});
+        });
+    }
+    /*添加弹窗层*/
+    function modaldemoa() {
+
+        addshow();
+        $("#modal-demoa").modal("show");
+    }
+    /*添加时角色下拉展示*/
+    function addshow() {
+        $.ajax({
+            url: "{:url('addshow')}",
+            success: function (res) {
+                var arr=res.data;
+                var op="";
+                $.each(arr, function(i,val){
+                op=op+"<option value='"+val.id+"'>"+val.name+"</option>";
+                });
+                $(".select").html(op);
+            }
+        })
+    }
+    /*添加操作*/
+    function add(){
+        var __token__=$("#__token__").val();//获取token
+        var adminName=$("#adminName").val();
+        var password=$("#password").val();
+        var phone=$("#phone").val();
+        var Role=$("#Role").val();
+        $.ajax({
+            url: "{:url('add')}",
+            data: {
+                __token__: __token__,
+                name: adminName,
+                password: password,
+                phone: phone,
+                Role: Role,
+            },
+            dataType:"json",
+            success: function (res) {
+                console.log(res);
+                if (res.status=="no"){
+                    $("#tips").html(res.message+"!");
+                    $("#tips").css("color","red");
+                    setTimeout(function(){
+                        $("#tips").html("");
+                    },3000);
+                }else if(res.status=="yes"){
+                    var adminName=$("#adminName").val("");
+                    var password=$("#password").val();
+                    var phone=$("#phone").val("");
+                    $("#modal-demoa").modal("hide");//关闭弹出层
+                    show();
+                }
+
+                token();
+            }
+        })
+    }
+    /*修改弹窗层*/
+    function modaldemo(id,name,phone,r_id) {
+        var showid=$("#idd").html(id);
+        $("#upadminName").val(name);
+        $("#upphone").val(phone);
+        $.ajax({
+            url: "{:url('addshow')}",
+            success: function (res) {
+                var arr=res.data;
+                var op="";
+                $.each(arr, function(i,val){
+                    if (r_id==val.id){
+                        op=op+"<option selected value='"+val.id+"'>"+val.name+"</option>";
+                    } else{
+                        op=op+"<option value='"+val.id+"'>"+val.name+"</option>";
+                    }
+
+                });
+                $(".upselect").html(op);
+            }
+        })
+        $("#upmodal-demo").modal("show");
+    }
+    /*修改*/
+    function upda() {
+        var __token__=$("#__token__").val();//获取token
+        var id=$("#idd").html();
+        var name=$("#upadminName").val();
+        var password=$("#uppassword").val();
+        var phone=$("#upphone").val();
+        var upselect=$(".upselect").val();
+        $.ajax({
+            url: "{:url('update')}",
+            data:{
+                id:id,
+                name:name,
+                password:password,
+                phone:phone,
+                r_id:upselect,
+                __token__:__token__,
+            },
+            dataType:"json",
+            success: function (res) {
+                console.log(res);
+                if (res.status=="no"){
+                    $("#uptips").html(res.message+"!");
+                    $("#uptips").css("color","red");
+                    setTimeout(function(){
+                        $("#uptips").html("");
+                    },3000);
+                }else if(res.status=="yes"){
+                    $("#upmodal-demo").modal("hide");//关闭弹出层
+                    show();
+                }
+                token();
+                var password=$("#uppassword").val("");
+
+            }
+        })
+    }
+
+    /*单删除*/
+    function admin_del(id) {
+        var __token__=$("#__token__").val();//获取token
+        $.ajax({
+            url:"{:url('datadel')}",
+            data:{
+                __token__:__token__,
+                del_id:id,
+            },
+            dataType:"json",
+            success:function (res) {
+                console.log(res);
+                if(res.status=="no"){
+                    $("#ts").html(res.message);
+                    $("#ts").css("color","red");
+                    setTimeout(function(){
+                        $("#ts").html("");
+                    },3000);
+                }else if(res.status=="yes"){
+                    show();
+                }
+                token();
+            }
+        })
+    }
+
+
+    /*批量删除*/
+    function datadel() {
+        var __token__=$("#__token__").val();
+        var che=$(".che:checked");
+        var id=[];
+        for (var i=0;i<che.length;i++){
+            id.push(che[i].value)
+        }
+        $.ajax({
+            url:"{:url('datadel')}",
+            data:{
+                __token__:__token__,
+                del_id:id,
+            },
+            dataType:"json",
+            success:function (res) {
+                console.log(res);
+                if(res.status=="yes"){
+                    show();
+                }else if(res.status=="no"){
+                    $("#ts").html(res.message);
+                    $("#ts").css("color","red");
+                    setTimeout(function(){
+                        $("#ts").html("");
+                    },3000);
+                }
+                token();
+            }
+        })
+    }
+
+</script>

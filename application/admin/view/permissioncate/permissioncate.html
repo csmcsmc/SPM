@@ -70,15 +70,6 @@
 <!--弹出层-->
 {include file="foot"}       <!--引入底部导航栏文件-->
 <script>
-    function token() {          //写了一个专门执行token自动生成的方法
-        $.ajax({
-            url:"{:url('Common/commonToken')}",
-            dataType:"json",                        //设置接值格式为json
-            success:function (res) {
-                var __token__=$("#__token__").val(res.token);
-            }
-        })
-    }
 
     $(document).ready(function(){
         show();
@@ -142,7 +133,8 @@
                     var tr='';
                     if (status=='ok') {
                         for (var i=0; i < message.length; i++){
-                            tr=tr+"<tr class='text-c'>                               <td><input type='checkbox' class='b' value='"+message[i].id+"'></td>                             <td>"+message[i].id+"</td><td >"+message[i].name+"</td>                            <td >"+message[i].description+"</td>                                                  <td class='f-14 product-brand-manage'><a onClick="+"modaldemo("+message[i].id+",'"+message[i].name+"','"+message[i].description+"')"+" style='text-decoration:none' title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a>                                              <a style='text-decoration:none' onclick='del("+message[i].id+")' class='ml-5'  title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
+                            tr=tr+"<tr class='text-c'>";                            tr=tr+"<td><input type='checkbox' class='b' value='"+message[i].id+"'></td>";     tr=tr+"<td>"+message[i].id+"</td><td >"+message[i].name+"</td>";                  tr=tr+"<td >"+message[i].description+"</td>";                                     tr=tr+"<td class='f-14 product-brand-manage'>";
+  tr=tr+"<a onClick="+"modaldemo("+message[i].id+",\""+message[i].name+"\",'"+message[i].description+"')"+" style='text-decoration:none' title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a>";                                         tr=tr+"<a style='text-decoration:none' onclick='del("+message[i].id+")' class='ml-5'  title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>";
                         }
                         $(".table tbody").html(tr);
                     }
@@ -152,17 +144,26 @@
     }
     //单删
     function del(del_id) {
+        var __token__=$("#__token__").val();
         $.ajax({
             type:'post',
-            url:"del",
+            url:"datadel",
             data:{
                 del_id:del_id,
+                __token__:__token__,
             },
             dataType:"json",
             success:function(res) {
                 if (res.status=="ok") {
                     show();
+                }else if (res.status == "no") {
+                    $("#tips").html(res.message);
+                    $("#tips").css("color", "red");
+                    setTimeout(function () {
+                        $("#tips").html("");
+                    }, 3000);
                 }
+                token();
             }
         })
     }
@@ -210,16 +211,18 @@
         var r = confirm("确认删除吗");
         if (r == true) {
             var a = $('.b:checked');
-            var id = "";
+            var __token__=$("#__token__").val();
+            var id =[];
             for (var i = 0; i < a.length; i++) {
-                id = id + "," + a[i].value;
+                id.push(a[i].value);
             }
 
             $.ajax({
                 url: "{:url('datadel')}",
                 type: "post",
                 data: {
-                    id: id,
+                    del_id: id,
+                    __token__:__token__,
                 },
                 dataType: "json",
                 success: function (res) {
@@ -233,7 +236,9 @@
                             $("#tips").html("");
                         }, 3000);
                     }
+                    token();
                 }
+
             })
 
         }else{

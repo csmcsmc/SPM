@@ -30,9 +30,9 @@ class Login extends controller
                 $arr=["code"=>"0","status"=>"success","message"=>"用户名密码正确"];
                 Session::set('name',$user);     //如果验证成功存session
                 //登录权限
-//                Session::set('name_id',$sel['id']);
-//                $rbac = new Rbac();
-//                $rbac->cachePermission($sel['id']);
+                Session::set('name_id',$sel['id']);
+                $rbac = new Rbac();
+                $rbac->cachePermission($sel['id']);
             }
             $type=json_encode($arr);
             echo $type;

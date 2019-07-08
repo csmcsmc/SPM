@@ -24,11 +24,11 @@ class Role extends Common
         $acc=['status'=>$arr];
         return json($acc);
     }
-    public function add(){
-        return $this->fetch();
-    }
+//    public function add(){
+//        return $this->fetch();
+//    }
     //角色添加方法
-    public function addAction(){
+    public function add(){
         $data=input();
         $validate = new \app\admin\validate\Role;
         if (!$validate->check($data)) {
@@ -56,7 +56,7 @@ class Role extends Common
                 $acc = ["code" => "0", "status" => "no", "message" => "您要添加的角色名称已存在！"];
                 return json($acc);
             }
-       }
+        }
 
     }
 
@@ -68,17 +68,15 @@ class Role extends Common
             return json($acc);
         }
     }
-    //查询修改权限显示
     public function mypermission(){
-         $id=input("id");
-         $sel=Db::table('role_permission')->where('role_id',$id)->select();
-         if ($sel==true){
-             $acc=["code"=>"0","status"=>"yes","data"=>$sel];
-             return json($acc);
-         }
+        $id=input("id");
+        $sel=Db::table('role_permission')->where('role_id',$id)->select();
+        if ($sel==true){
+            $acc=["code"=>"0","status"=>"yes","data"=>$sel];
+            return json($acc);
+        }
     }
-    //批删单删一个方法
-    public function roledel(){
+    public function datadel(){
         $data=input();
         $id=$data['del_id'];
         $validate = new \app\admin\validate\Delete;
@@ -94,9 +92,9 @@ class Role extends Common
             $acc=["code"=>"0","status"=>"yes","message"=>"删除成功"];
             return json($acc);
         }
+
     }
-    //修改方法
-    public function uprole_permission(){
+    public function update(){
         $data=input();
         $id=$data['id'];
         $name=$data['name'];
@@ -116,16 +114,16 @@ class Role extends Common
                     ->update(['name' => $name,'description' => $description]);
 
                 //删除
-            $del=Db::table('role_permission')->where('role_id',$id)->delete();
+                $del=Db::table('role_permission')->where('role_id',$id)->delete();
 
-            $p_id=explode(",",$permission_id);
-            array_shift($p_id);
-            foreach ($p_id as $k=>$v){
-                $add=Db::query("insert into `role_permission` (`role_id`,`permission_id`) values ('$id','$v')");
-            }
-                $acc=["code"=>"0","status"=>"yes","data"=>"添加成功"];
+                $p_id=explode(",",$permission_id);
+                array_shift($p_id);
+                foreach ($p_id as $k=>$v){
+                    $add=Db::query("insert into `role_permission` (`role_id`,`permission_id`) values ('$id','$v')");
+                }
+                $acc=["code"=>"0","status"=>"yes","data"=>"修改成功"];
             }else{
-                $acc=["code"=>"0","status"=>"no","data"=>"您要添加的角色名或权限已存在！"];
+                $acc=["code"=>"0","status"=>"no","data"=>"您要修改的角色名或权限已存在！"];
             }
             return json($acc);
         }

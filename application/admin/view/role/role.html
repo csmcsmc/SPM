@@ -9,10 +9,10 @@
     <div class="Hui-article">
         <article class="cl pd-20">
 
-            <div class="text-c">
+            <div >
                 <div class="Huiform" method="post" action="" target="_self">
                     <a href="javascript:;"  onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
-                    <input type="text" class="input-text" style="width:250px" placeholder="权限名称"  name="">
+
                     <button   class="btn btn-success"  onClick="modaldemo()" name=""><i class="Hui-iconfont">&#xe600;</i> 添加权限</button>
                     <span id="ts"></span>
                 </div>
@@ -164,6 +164,25 @@
         })
         $("#modal-demoa").modal("show");
     }
+
+    //修改页面权限的展示
+    function upshow(){
+        $.ajax({
+            url:"{:url('show')}",
+            success:function (res) {
+                var sum=res.status;
+                var dl='';
+                $.each(sum,function (k,v) {
+                    dl=dl+"<dt><label class='' style='color:blue'>"+k+"</label></dt><dd><dl class='c1 permission-list2'>";
+                    $.each(v,function (ka,va) {
+                        dl=dl+"<label class=''><input type='checkbox' class='upcheckbox' id='p"+va['id']+"' value='"+va['id']+"'>"+va['name']+"</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                    })
+                    dl=dl+"</dd>";
+                });
+                $("#permission").html(dl);
+            }
+        })
+    }
     //修改角色权限
     $("#send").click(function () {
         var __token__=$("#__token__").val();//获取token
@@ -178,7 +197,7 @@
         }
 
         $.ajax({
-            url:"{:url('uprole_permission')}",
+            url:"{:url('update')}",
             data:{
                 __token__:__token__,
                 id:id,
@@ -186,6 +205,7 @@
                 description:description,
                 permission_id:permission_id,
             },
+            dataType:'json',
             success:function (res) {
                 console.log(res);
                 if(res.status=="yes"){  //借值如果添加成功  框清空 提示，提示3秒消失
@@ -208,11 +228,12 @@
     function del(id){
         var __token__=$("#__token__").val();//获取token
         $.ajax({
-            url:"{:url('roledel')}",
+            url:"{:url('datadel')}",
             data:{
                 __token__:__token__,
                 del_id:id,
             },
+            dataType:'json',
             success:function (res) {
                 console.log(res);
                 if(res.status=="yes"){  //借值如果添加成功  框清空 提示，提示3秒消失
@@ -239,11 +260,12 @@
         }
 
         $.ajax({
-            url:"{:url('roledel')}",
+            url:"{:url('datadel')}",
             data:{
                 __token__:__token__,
                 del_id:id,
             },
+            dataType:'json',
             success:function (res) {
                 console.log(res);
                 if(res.status=="yes"){
@@ -285,27 +307,6 @@
         })
     }
 
-
-    //修改页面权限的展示
-    function upshow(){
-        $.ajax({
-            url:"{:url('show')}",
-            success:function (res) {
-                var sum=res.status;
-                var dl='';
-                $.each(sum,function (k,v) {
-                    dl=dl+"<dt><label class='' style='color:blue'>"+k+"</label></dt><dd><dl class='c1 permission-list2'>";
-                    $.each(v,function (ka,va) {
-                        dl=dl+"<label class=''><input type='checkbox' class='upcheckbox' id='p"+va['id']+"' value='"+va['id']+"'>"+va['name']+"</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-                    })
-                    dl=dl+"</dd>";
-                });
-                $("#permission").html(dl);
-            }
-        })
-    }
-
-    
     //添加角色
     $("#sub").click(function () {
         var name=$("#name").val();  //获取添加的名称和描述
@@ -318,13 +319,14 @@
             permission_id=permission_id+','+pe_id[i].value;
         }
         $.ajax({
-            url:"{:url('addaction')}",
+            url:"{:url('add')}",
             data:{
                 name:name,
                 description:description,
                 __token__:__token__,
                 permission_id:permission_id,
             },
+            dataType:'json',
             success:function (res) {
                 if(res.status=="yes"){  //借值如果添加成功  框清空 提示，提示3秒消失
                     $("#name").val("");
