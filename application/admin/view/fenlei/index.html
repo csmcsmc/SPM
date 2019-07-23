@@ -1,0 +1,313 @@
+{include file="header"}    <!--引入头部文件-->
+
+{include file="left"}       <!-- 引入左侧导航栏文件-->
+
+<section class="Hui-article-box">
+    <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 产品管理 <span class="c-gray en">&gt;</span> 品牌管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+
+    <div class="Hui-article">
+        <article class="cl pd-20">
+            <input type="hidden" id="__token__" name="__token__" value="{$Request.token}" />
+            <div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a href="javascript:;" id="pis" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+
+            <a href="javascript:;" onclick="modaldemo()" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加分类</a>
+                <span id="ts"></span>
+            </span> <span class="r">共有数据：<strong>54</strong> 条</span> </div>
+            <div class="mt-10">
+                <table class="table table-border table-bordered table-bg table-sort">
+                    <thead>
+                    <tr class="text-c">
+                        <th width="25"><input type="checkbox" id="onck" value=""></th>
+                        <th width="70">ID</th>
+                        <th width="120">分类名称</th>
+                        <th width="100">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tb">
+
+
+                    </tbody>
+                </table>
+            </div>
+        </article>
+    </div>
+</section>
+<!--添加分类弹出层-->
+<div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content radius">
+            <div class="modal-header">
+                <h3 class="modal-title">分类添加</h3>
+                <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+            </div>
+            <div class="modal-body">
+
+                <div  class="form form-horizontal" id="form-user-add">
+                    <div class="row cl">
+
+                        <div class="formControls col-5">
+                            <label ><span class="c-red">*</span>分类名称：
+                                <input type = "text" id="f_name" placeholder = "分类名称" class = "input-text radius size-S " >
+                            </label>
+
+                        </div>
+                        <div class="formControls col-5">
+                            <label ><span class="c-red">*</span>上级分类：
+                                <select   class="sel">
+                                </select>
+                            </label>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="addaction">确定</button>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                <span id="tips"></span>
+            </div>
+        </div>
+    </div>
+</div>
+<!--添分类弹出层-->
+
+<!--修改分类弹出层-->
+<div id="modal-demoa" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content radius">
+            <div class="modal-header">
+                <h3 class="modal-title">分类添加</h3>
+                <span id="id" hidden></span>
+                <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+            </div>
+            <div class="modal-body">
+
+                <div  class="form form-horizontal" >
+                    <div class="row cl">
+                        <span id="upts"></span>
+                        <div class="formControls col-5">
+                            <label ><span class="c-red">*</span>分类名称：
+                                <input type = "text" id="name" placeholder = "分类名称" class = "input-text radius size-S " >
+                            </label>
+
+                        </div>
+                        <div class="formControls col-5">
+                            <label ><span class="c-red">*</span>上级分类：
+                                <select   class="se">
+                                </select>
+                            </label>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="upaction">确定</button>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--修改分类弹出层-->
+{include file="foot"}       <!--引入底部导航栏文件-->
+
+<script>
+    show();
+    //展示页面
+    function show() {
+        $.ajax({
+            url: "{:url('show')}",
+            success: function (res) {
+                var arr=res.data;
+                var tr="";
+for (var i=0;i<arr.length;i++) {
+    tr = tr + "<tr class='text-c'>";
+    tr = tr + "<td><input type='checkbox' value='"+arr[i].f_id+"' class='ck' value='1' name=''></td>";
+    tr = tr + "<td>"+arr[i].f_id+"</td>";
+    tr = tr + "<td>"+arr[i].f_name+"</td>";
+    tr = tr + "<td>";
+    tr = tr + "<a title='编辑' href='javascript:;' onclick='update("+arr[i].f_id+",\""+arr[i].f_name+"\","+arr[i].p_id+")' class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6df;</i></a>";
+    tr = tr + "<a title='删除'  onclick='del("+arr[i].f_id+")' href='javascript:;'  class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6e2;</i></a>";
+    tr = tr + "</td>";
+    tr = tr + "</tr>";
+
+}
+                $("#tb").html(tr);
+            }
+
+        })
+    }
+    //添加弹出层
+    function modaldemo() {
+        $.ajax({
+            url: "{:url('addshow')}",
+            success: function (res) {
+                var arr=res.data;
+                var op="";
+                    $.each(arr, function(k,v){
+                    op=op+"<option  value='"+v['f_id']+"'>"+v['f_name']+"</option>";
+                    });
+
+                $(".sel").html(op);
+            }
+        })
+        $("#modal-demo").modal("show");
+    }
+    //添加操作
+    $("#addaction").click(function () {
+        var f_name=$("#f_name").val();
+        var p_id=$(".sel").val();
+        var __token__=$("#__token__").val();
+        $.ajax({
+            url: "{:url('add')}",
+            type:"post",
+            data:{
+                f_name:f_name,
+                p_id:p_id,
+                __token__:__token__,
+            },
+            success: function (res) {
+                console.log(res);
+                if (res.status=="no"){
+                    $("#tips").html(res.message);
+                    $("#tips").css("color","red");
+                    $("#f_name").val("");
+                    setTimeout(function(){
+                        $("#tips").html("");
+                    },3000);
+                } else if(res.status=="yes"){
+                    $("#modal-demo").modal("hide");//关闭弹出层
+                    $("#f_name").val("");          //文本框置空
+                    show();
+                }
+                token();
+            }
+        })
+    })
+    //单删操作
+    function del(id) {
+        var __token__=$("#__token__").val();
+        $.ajax({
+            url:"datadel",
+            data:{
+                del_id:id,
+                __token__:__token__,
+            },
+            dataType:'json',
+            success:function(res) {
+                if (res.status=="yes") {
+                    show();
+                }else{
+                    $("#ts").html(res.message);
+                    $("#ts").css("color", "red");
+                    setTimeout(function () {
+                        $("#ts").html("");
+                    }, 3000);
+                }
+                token();
+            }
+        })
+    }
+    //批量删除
+    $("#pis").click(function () {
+        var r = confirm("确认删除吗");
+        if (r == true) {
+            var a = $('.ck:checked');  //获取被选中的文本框里的内容
+            var __token__=$("#__token__").val();
+            var id = [];
+            for (var i = 0; i < a.length; i++) {  //循环获取被选中的文本框中的id
+                id.push(a[i].value);
+            }
+            $.ajax({
+                url: "{:url('datadel')}",
+                data: {
+                    type: "post",
+                    del_id: id,
+                    __token__:__token__,
+                },
+                dataType:'json',
+                success: function (res) {
+                    //console.log(res);
+                    if (res.status == "yes") {
+                        $('#onck').prop('checked',false);
+                        show();
+                    } else if (res.status == "no") {
+                        $('#onck').prop('checked',false);
+                        $('.ck').prop('checked',false);
+                        $("#ts").html(res.message);
+                        $("#ts").css("color", "red");
+                        setTimeout(function () {
+                            $("#ts").html("");
+                        }, 3000);
+                    }
+                    token();
+                }
+            })
+        }else{
+            $('#onck').prop('checked',false);
+            $('.ck').prop('checked',false);
+        }
+    })
+    //修改弹出层
+    function update(id,name,pid) {
+        $("#name").val(name);
+        $("#id").html(id);
+        $.ajax({
+            url: "{:url('addshow')}",
+            success: function (res) {
+                var arr=res.data;
+                var op="";
+
+                $.each(arr, function(k,v){
+                    if (pid==v['f_id']){
+            op=op+"<option selected value='"+v['f_id']+"'>"+v['f_name']+"</option>";
+                    } else{
+                      op=op+"<option  value='"+v['f_id']+"'>"+v['f_name']+"</option>";
+                    }
+                });
+                $(".se").html(op);
+            }
+        })
+        $("#modal-demoa").modal("show");
+    }
+    //修改
+    $("#upaction").click(function () {
+        var __token__=$("#__token__").val();
+        var f_name=$("#name").val();
+        var f_id=$("#id").html();
+        var p_id=$(".se").val();
+        $.ajax({
+            url:"{:url('update')}",
+            data:{
+                type:'post',
+                __token__:__token__,
+                f_name:f_name,
+                f_id:f_id,
+                p_id:p_id,
+            },
+            dataType:'json',
+            success:function (res) {
+                //console.log(res);
+                if(res.status=="yes"){
+                    $("#name").val("");
+                    $("#modal-demoa").modal("hide");//关闭弹出层
+                    show();
+                }else if(res.status=="no"){
+                    $("#upts").html(res.message);
+                    $("#upts").css("color","red");
+                    setTimeout(function(){
+                        $("#upts").html("");
+                    },3000);
+                }
+                token();
+            }
+        })
+
+    })
+
+</script>

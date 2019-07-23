@@ -3,6 +3,7 @@
 namespace app\admin\controller;
 use think\Controller;
 use think\facade\Session;
+use  think\Db;
 use gmars\rbac\Rbac;
 class Common extends Controller
 {

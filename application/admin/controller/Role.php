@@ -78,20 +78,35 @@ class Role extends Common
     }
     public function datadel(){
         $data=input();
-        $id=$data['del_id'];
         $validate = new \app\admin\validate\Delete;
         if (!$validate->check($data)) {
             $acc=["code"=>"0","status"=>"no","message"=>$validate->getError()];
             return json($acc);
-        }else{
+        }
+            $id=$data['del_id'];
             if (is_array($id)){
                 $id=implode(",",$id);
             }
-            $dela=Db::table('role')->where('id','in',$id)->delete();
-            $delb=Db::table('role_permission')->where('role_id','in',$id)->delete();
-            $acc=["code"=>"0","status"=>"yes","message"=>"删除成功"];
+
+            // 启动事务
+            Db::startTrans();
+            try {
+                $dela=Db::table('role')->where('id','in',$id)->delete();
+                $delb=Db::table('role_permission')->where('role_id','in',$id)->delete();
+                // 提交事务
+                Db::commit();
+            } catch (\Exception $e) {
+                // 回滚事务
+                Db::rollback();
+            }
+        if ($dela==true&&$delb==true){
+            $acc=["code"=>"0","status"=>"yes","message"=>"删除成功！"];
+            return json($acc);
+        }else{
+            $acc=["code"=>"0","status"=>"no","message"=>"删除失败！"];
             return json($acc);
         }
+
 
     }
     public function update(){

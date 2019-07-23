@@ -1,0 +1,196 @@
+{include file="header"}    <!--引入头部文件-->
+
+{include file="left"}       <!-- 引入左侧导航栏文件-->
+
+<section class="Hui-article-box">
+    <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 产品管理 <span class="c-gray en">&gt;</span> 产品属性管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+    <div class="Hui-article">
+
+        <div>
+            <div class="pd-40">
+                <input type="text" id="goodsid"  value="{$goodsid}" hidden>
+                <input type="hidden" id="__token__" name="__token__" value="{$Request.token}" />
+                <span class ="select-box">
+                  <select onchange='sxshow()' class = "select" size = "1" id="showac" name = "demo1" >
+                  </select>
+                </span>
+                <dl class="permission-list">
+                    <!--展示信息-->
+                </dl>
+            </div>
+            <div class="modal-footer">
+                <span id="tips"></span>
+                <button class="btn btn-primary" id="addgoodsattr">保存</button>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!--添加时的弹出层页面展示-->
+<div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content radius">
+            <div class="modal-header">
+                <h3 class="modal-title" id="date">添加权限信息</h3>
+                <input type="text" id="upid" hidden>
+                <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+            </div>
+            <div class="modal-body">
+                添加权限分组：
+                <select  id="abid">
+
+                </select>
+            </div>
+            <div class="modal-body">
+                货品金额：<input type="text" id="description" placeholder="权限分类描述"  class="input-text" style="width:120px"  >
+            </div>
+            <div class="modal-body">
+                货品库存：<input type="text" id="path" placeholder="权限分类描述"  class="input-text" style="width:200px"  >
+            </div>
+
+
+            <div class="modal-body">
+                <span id="tips"></span>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="aaa">确定</button>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--添加弹出层-->
+
+{include file="foot"}       <!--引入底部导航栏文件-->
+
+<script>
+
+show();
+
+    //属性分类改变后出现的属性
+    function sxshow() {
+        var goodsid=$("#goodsid").val();
+        var acid=$("#showac").val();
+        if (!acid==0) {
+            $.ajax({
+                url:"{:url('product/sxshow')}",
+                data:{
+                    goodsid:goodsid,
+                    acid:acid,
+                },
+                success:function (res) {
+
+                    var sum=res.status;
+                    var def=res.def;
+                    var dl='';
+                    $.each(sum,function (k,v) {
+                        dl=dl+"<dt><label style='color:blue'>"+k+"</label></dt><dd><dl class='c1 permission-list2'>";
+                        $.each(v,function (ka,va) {
+                            dl=dl+"<label class=''><input type='checkbox' class='mycheckbox'  abid='"+va['abid']+"'  id='ad"+va['adid']+"' value='"+va['adid']+"'>"+va['adname']+"</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                        })
+                        dl=dl+"</dd>";
+                    });
+                    $(".permission-list").html(dl);
+                    if (def!=null) {
+                        $(".permission-list").html(dl);
+                        for (var i=0;i<def.length;i++) {
+                            var did=def[i].ad_id;
+                            //console.log($('#ad'+did));
+                            $('#ad'+did).prop("checked",true);
+
+                        }
+                    }
+
+                }
+
+            })
+        }
+
+    }
+
+    //属性分类下拉框展示
+    function show() {
+        var goodsid=$("#goodsid").val();
+        $.ajax({
+            url:"{:url('product/acshow')}",
+            data:{
+                goodsid:goodsid,
+            },
+            success:function (res) {
+                var arr=res.data;
+                var def=res.def[0].ac_id;
+                //console.log(arr);
+                var op="";
+                op=op+"<option value = '0' > 选中属性分类</option>";
+                $.each(arr, function(k,v){
+                    if (v['id']==def){
+                        op=op+"<option  selected value='"+v['id']+"'  >"+v['name']+"</option>";
+                    }else{
+                        op=op+"<option  value='"+v['id']+"'  >"+v['name']+"</option>";
+                    }
+
+                });
+                $("#showac").html(op);
+                if (def!==null) {
+                    sxshow();
+                }
+
+            }
+        })
+
+    }
+
+//添加商品属性
+$("#addgoodsattr").click(function () {
+    var goodsid=$("#goodsid").val();
+    var ac_id=$("#showac").val();
+    var adid=[];
+    var abid=[];
+    $(".mycheckbox:checked").each(function(){
+        abid.push($(this).attr('abid'))
+        adid.push($(this).val())
+    });
+    var sumArr=[];
+
+    for (var i = 0; i < adid.length; i++) {
+        //console.log(i);
+        var id = {};
+        for (var j = 0; j < abid.length; j++) {
+            if (i == j) {
+                id.adid = adid[i];
+                id.abid = abid[j];
+                sumArr.push(id);
+            }
+        }
+    }
+
+    $.ajax({
+        url:"{:url('product/addsx')}",
+        data:{
+            goodsid:goodsid,
+            ac_id:ac_id,
+            sumArr:sumArr,
+        },
+        success:function (res) {
+            if(res.status=="yes"){
+                $('.mycheckbox').prop('checked',false);
+                show();
+            }else if(res.status=="no"){
+                $("#tips").html(res.message);
+                $("#tips").css("color","red");
+                $('.mycheckbox').prop('checked',false);
+                setTimeout(function(){
+                    $("#tips").html("");
+                },3000);
+            }
+        }
+    })
+
+
+})
+
+
+
+
+</script>

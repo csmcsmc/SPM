@@ -1,0 +1,22 @@
+<script type="text/javascript" src="__STATIC__/lib/jquery/1.9.1/jquery.min.js"></script>
+
+<input type="file" name="file"  id="ase"/>
+<button id="sed">上传</button>
+<script>
+    $("#sed").click(function () {
+        var formData = new FormData();
+        formData.append('aaa', $('#ase')[0].files[0]);
+        $.ajax({
+            url:"{:url('upper')}",
+            type:'post',
+            data: formData,
+            contentType: false, // 注意这里应设为false
+            processData: false,
+            cache: false,
+            success:function (res) {
+                console.log(res);
+            }
+        })
+
+    })
+</script>

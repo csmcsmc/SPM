@@ -128,14 +128,14 @@ class Permission extends Common
 
     }
 
-    public function datadel(){      //批量删除方法
+    public function datadel(){      //删除方法
         $data=input();
-        $id=$data['del_id'];
         $validate = new \app\admin\validate\Delete;
         if (!$validate->check($data)) {
             $acc=["code"=>"0","status"=>"no","message"=>$validate->getError()];
             return json($acc);
-        }else{
+        }
+        $id=$data['del_id'];
             if(is_array($id)){
                 implode(',',$id);
             }
@@ -148,7 +148,7 @@ class Permission extends Common
                 $acc=["code"=>"0","status"=>"no","message"=>"删除失败！"];
                 return json($acc);
             }
-        }
+
     }
 
 

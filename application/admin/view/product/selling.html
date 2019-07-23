@@ -1,0 +1,384 @@
+{include file="header"}    <!--引入头部文件-->
+
+{include file="left"}       <!-- 引入左侧导航栏文件-->
+
+<section class="Hui-article-box">
+    <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 产品管理 <span class="c-gray en">&gt;</span> 产品列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+    <div class="Hui-article">
+
+        <div>
+            <div class="pd-20">
+                <input type="hidden" id="__token__" name="__token__" value="{$Request.token}" />
+                <div class="text-c">
+                    日期范围：{$gid}
+                    <input type="text" id="logmin" class="input-text Wdate" style="width:120px;">
+                    -
+                    <input type="text"  id="logmax" class="input-text Wdate" style="width:120px;">
+                    <input type="text"   placeholder=" 产品名称" style="width:250px" class="input-text">
+                    <button name="" id="" class="btn btn-success" type="submit"><i class="Hui-iconfont">&#xe665;</i> 搜产品</button>
+                </div>
+                <div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> <a class="btn btn-primary radius" onclick="product_add()" href="javascript:;"><i class="Hui-iconfont">&#xe600;</i> 添加产品</a></span><spam id="ts"></spam>
+                    <span class="r">共有数据：<strong>54</strong> 条</span> </div>
+                <div class="mt-20">
+                    <table class="table table-border table-bordered table-bg table-hover table-sort">
+                        <thead>
+                        <tr class="text-c">
+                            <th width="40"><input id="a" type="checkbox" value=""></th>
+                            <th width="40">ID</th>
+                            <th width="100">商品名称</th>
+                            <th width="100">商品属性</th>
+                            <th width="100">商品价格</th>
+                            <th width="100">商品库存</th>
+                            <th width="100">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tbody">
+
+
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+<!--添加弹出层-->
+<div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content radius">
+            <div class="modal-header">
+                <h3 class="modal-title">添加商品信息</h3>
+                <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+            </div>
+            添加商品属性：
+            <div class="modal-body" id="sel">
+
+
+            </div>
+
+
+            <div class="modal-body">
+                商品金额：<input type="text" id="price"  class="input-text" style="width:200px"  >
+            </div>
+            <div class="modal-body">
+                商品库存：<input type="text" id="s_sum"  class="input-text" style="width:200px"  >
+            </div>
+
+
+            <div class="modal-footer">
+                <span id="tips"></span>
+                <button id="add" class="btn btn-primary">确定</button>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--添加弹出层-->
+
+<!--修改弹出层-->
+<div id="upmodal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content radius">
+            <div class="modal-header">
+                <h3 class="modal-title">修改商品信息</h3>
+                <p id="goods_id" hidden></p>
+                <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+            </div>
+            修改商品属性：
+            <span id="s_id" hidden></span>
+            <div class="modal-body" id="upsel">
+
+
+            </div>
+
+
+            <div class="modal-body">
+                商品金额：<input type="text" id="upprice"  class="input-text" style="width:200px"  >
+            </div>
+            <div class="modal-body">
+                商品库存：<input type="text" id="ups_sum"  class="input-text" style="width:200px"  >
+            </div>
+            <div class="modal-footer">
+                <span id="uptips"></span>
+                <button id="update" class="btn btn-primary">确定</button>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+            </div>
+
+        </div>
+
+
+    </div>
+</div>
+<!--修改弹出层-->
+{include file="foot"}       <!--引入底部导航栏文件-->
+
+<script>
+show();
+    function show() {
+        var gid={$gid};
+        $.ajax({
+            url:"{:url('selling/show')}",
+            data:{
+                type:'post',
+                gid:gid,
+            },
+            dataType:'json',
+            success: function (res) {
+                //console.log(res);
+                var arr=res.data;
+                var tr="";
+                for (var i=0;i<arr.length;i++) {
+                    tr = tr + "<tr class='text-c'>";
+                    tr = tr + "<td><input type='checkbox' value='"+arr[i].s_id+"' class='ck' value='1' name=''></td>";
+                    tr = tr + "<td>"+arr[i].s_id+"</td>";
+                    tr = tr + "<td>"+arr[i].name+"</td>";
+                    tr = tr + "<td>"+arr[i].goods_attr_id+"</td>";
+                    tr = tr + "<td>"+arr[i].price+"</td>";
+                    tr = tr + "<td>"+arr[i].s_sum+"</td>";
+                    tr = tr + "<td>";
+                    tr = tr + "<a title='编辑'  onclick="+"update("+arr[i].s_id+",'"+arr[i].goods_attr_id+"','"+arr[i].price+"','"+arr[i].s_sum+"')"+" class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6df;</i></a>";
+                    tr = tr + "<a title='删除'  onclick='abdel("+arr[i].s_id+")' href='javascript:;'  class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6e2;</i></a>";
+                    tr = tr + "</td>";
+                    tr = tr + "</tr>";
+
+                }
+                $("#tbody").html(tr);
+            }
+        })
+    }
+    //添加弹出层
+    function product_add(){
+        var gid={$gid};
+
+        $.ajax({
+            url:"{:url('selling/addshow')}",
+            data:{
+                gid:gid,
+            },
+            success:function (res) {
+                //console.log(res);
+                var arr=res.data;
+                var dl='';
+
+                $.each(arr,function (k,v) {
+                    dl=dl+""+k+":&nbsp;&nbsp;&nbsp;<select class='sxsel' style='height: 30px;width: 80px;'>";
+                    $.each(v,function (ka,va) {
+                        dl=dl+"<option value='"+va['ad_id']+"'>"+va['adname']+"</option>";
+                    })
+                    dl=dl+"</select>";
+                    dl=dl+"</br>";
+                });
+                $("#sel").html(dl)
+             }
+             })
+        $("#modal-demo").modal("show")
+    }
+    //添加商品
+    $("#add").click(function () {
+        var gid={$gid};
+        var __token__=$("#__token__").val();
+       var price=$("#price").val();
+       var s_sum=$("#s_sum").val();
+       var adid=[];
+        $(".sxsel").each(function( key ,value ){   //循环div获取select
+            for (var i = 0; i < value.length; i++) {
+                //循环value也就是select取option
+                if (value.options[i].selected) {
+                    //如果这个option是被选中的就把这个option的value放入数组中
+                    adid.push(value[i].value)
+                }
+            }
+        })
+
+        $.ajax({
+            url:"{:url('selling/add')}",
+            data:{
+                __token__:__token__,
+                gid:gid,
+                price:price,
+                s_sum:s_sum,
+                adid:adid,
+            },
+            success:function (res) {
+                if(res.status=="yes"){
+                    $("#price").val("");
+                    $("#s_sum").val("");
+                    $("#modal-demo").modal("hide");
+                    show();
+                }else if(res.status=="no"){
+                    $("#tips").html(res.message);
+                    $("#tips").css("color","red");
+                    $("#price").val("");
+                    $("#s_sum").val("");
+                    setTimeout(function(){
+                        $("#tips").html("");
+                    },3000);
+                }
+                token();
+            }
+        })
+     
+
+    })
+
+    //修改弹出层
+    function update(s_id,goods_attr_id,price,s_sum) {
+        $("#s_id").html(s_id);
+        var gid={$gid};
+        $("#upprice").val(price);
+        $("#ups_sum").val(s_sum);
+
+        var goods_attr_id = goods_attr_id.split(',');
+        for(var i in goods_attr_id){
+            goods_attr_id[i];
+        }
+        console.log(goods_attr_id);
+
+        $.ajax({
+            url:"{:url('selling/upshow')}",
+            data:{
+                gid:gid,
+            },
+            success:function (res) {
+                //console.log(res);
+                var arr=res.data;
+                var dl='';
+
+                $.each(arr,function (k,v) {
+                    dl=dl+""+k+":&nbsp;&nbsp;&nbsp;<select class='upsxsel' style='height: 30px;width: 80px;'>";
+                    $.each(v,function (ka,va) {
+                        dl=dl+"<option  nam='"+va['adname']+"' value='"+va['ad_id']+"'>"+va['adname']+"</option>";
+                    })
+                    dl=dl+"</select>";
+                    dl=dl+"</br>";
+                });
+
+
+                $("#upsel").html(dl)
+
+                $.each(goods_attr_id,function (kaa,vaa) {
+                    $(".upsxsel").each(function (k,v) {
+
+                        $(this).children().each(function (ka,va) {
+                            var nam=$(this).attr('nam');
+
+                            if (vaa==nam){
+                                $(this).attr("selected", true);
+                            }
+                        })
+
+                    })
+                })
+            }
+        })
+
+        $("#upmodal-demo").modal("show")
+    }
+    //修改
+    $("#update").click(function () {
+        var s_id=$("#s_id").html();
+        var __token__=$("#__token__").val();
+        var price=$("#upprice").val();
+        var s_sum=$("#ups_sum").val();
+
+        var adid=[];
+        $(".upsxsel").each(function( key ,value ){
+            for (var i = 0; i < value.length; i++) {
+                if (value.options[i].selected) {
+                    adid.push(value[i].value)
+                }
+            }
+
+        })
+
+
+        $.ajax({
+            url:"{:url('selling/update')}",
+            data:{
+                __token__:__token__,
+                s_id:s_id,
+                price:price,
+                s_sum:s_sum,
+                adid:adid,
+            },
+            success:function (res) {
+                if(res.status=="yes"){
+                    $("#upmodal-demo").modal("hide");
+                    show();
+                }else if(res.status=="no"){
+                    $("#uptips").html(res.message);
+                    $("#uptips").css("color","red");
+                    setTimeout(function(){
+                        $("#uptips").html("");
+                    },3000);
+                }
+                token();
+            }
+        })
+    })
+    //单删
+    function abdel(s_id) {
+        var __token__=$("#__token__").val();
+        $.ajax({
+            url:"{:url('selling/datadel')}",
+            data:{
+                del_id:s_id,
+                __token__:__token__,
+            },
+            //dataType:'json',
+            success:function(res) {
+                console.log(res);
+                if (res.status=="yes") {
+                    show();
+                }else{
+                    $("#ts").html(res.message);
+                    $("#ts").css("color", "red");
+                    setTimeout(function () {
+                        $("#ts").html("");
+                    }, 3000);
+                }
+                token();
+            }
+        })
+    }
+    //批量删除
+function datadel(){
+    var r = confirm("确认删除吗");
+    if (r == true) {
+        var a = $('.ck:checked');  //获取被选中的文本框里的内容
+        var __token__=$("#__token__").val();
+        var id = [];
+        for (var i = 0; i < a.length; i++) {  //循环获取被选中的文本框中的id
+            id.push(a[i].value);
+        }
+        $.ajax({
+            url: "{:url('selling/datadel')}",
+            data: {
+                del_id: id,
+                __token__:__token__,
+            },
+            dataType:'json',
+            success: function (res) {
+                //console.log(res);
+                if (res.status == "yes") {
+                    $('#a').prop('checked', false);
+                    show();
+                } else if (res.status == "no") {
+                    $("#ts").html(res.message);
+                    $("#ts").css("color", "red");
+                    setTimeout(function () {
+                        $("#ts").html("");
+                    }, 3000);
+                }
+                token();
+            }
+        })
+    }else{
+        $('#a').prop('checked',false);
+        $('.ck').prop('checked',false);
+    }
+}
+</script>
+

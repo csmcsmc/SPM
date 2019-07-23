@@ -1,0 +1,324 @@
+{include file="header"}    <!--引入头部文件-->
+
+{include file="left"}       <!-- 引入左侧导航栏文件-->
+<link rel="stylesheet" href="__STATIC__/a.css">
+<section class="Hui-article-box">
+    <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 商品管理 <span class="c-gray en">&gt;</span> 商品属性管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+    <div class="Hui-article">
+        <article class="cl pd-20">
+            <div >
+                <div class="Huiform" method="post" action="" target="_self">
+                    <a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+                    <input type="text" placeholder="属性名称"  class="input-text" style="width:120px"  id="name">
+                    <select  style="width:120px;height: 30px;"  id="op">
+
+                    </select>
+
+                    <input type="hidden" id="__token__" name="__token__" value="{$Request.token}" />
+                    <button type="submit" class="btn btn-success" id="aaa" name=""><i class="Hui-iconfont">&#xe600;</i> 添加权限分类</button>
+                    <span id="tips"></span>
+
+                </div>
+            </div>
+
+            <table class="table table-border table-bordered table-bg">
+                <thead>
+                <tr>
+                    <th scope="col" colspan="7">权限节点</th>
+                </tr>
+                <tr class="text-c">
+                    <th width="25">
+                        <input type="checkbox" id="a">
+                    </th>
+                    <th width="40">ID</th>
+                    <th width="200">属性分类</th>
+                    <th width="200">属性名称</th>
+                    <th width="100">操作</th>
+                </tr>
+                </thead>
+                <tbody id="tr">
+
+                </tbody>
+            </table>
+        </article>
+    </div>
+</section>
+<!--修改时的弹出层页面展示-->
+<div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content radius">
+            <div class="modal-header">
+                <h3 class="modal-title" id="date">添加属性</h3>
+                <span id="aid"></span>
+                <input type="text" id="upid" hidden>
+                <a class="close" data-dismiss="modal" aria-hidden="true">×</a>
+            </div>
+            <div class="modal-body">
+                属性：<input type="text" id="adname" placeholder="权限分类名称"  class="input-text" style="width:120px"  >
+                <button class="btn btn-primary" onclick="addad()">添加</button>
+            </div>
+            <div class="modal-body">
+                <span id="ts"></span>
+            </div>
+
+            <div class="modal-body">
+                <table class ="table table-border table-bg table-bordered">
+                    <THEAD>
+                    <tr> <th width = “20％” >属性值</th> <th> 操作</th> </tr>
+                    </THEAD>
+                    <TBODY id="tab">
+
+                    </TBODY>
+                </table>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--弹出层-->
+{include file="foot"}       <!--引入底部导航栏文件-->
+<script>
+show();
+    $.ajax({
+        url:"fenlei_show",
+        success:function (res) {
+            //分类下拉框替换
+            var arr=res.data;
+            //console.log(arr);
+            var op="";
+            $.each(arr, function(k,v){
+                op=op+"<option value='"+v['id']+"'>"+v['name']+"</option>";
+            });
+
+            $("#op").html(op);
+        }
+    })
+    //属性展示页面
+    function show(){
+        $.ajax({
+            url: "{:url('show')}",
+            success: function (res) {
+                var arr=res.data;
+                var tr="";
+                for (var i=0;i<arr.length;i++) {
+                    tr = tr + "<tr class='text-c'>";
+                    tr = tr + "<td><input type='checkbox' value='"+arr[i].id+"' class='ck' value='1' name=''></td>";
+                    tr = tr + "<td>"+arr[i].id+"</td>";
+                    tr = tr + "<td>"+arr[i].aname+"</td>";
+                    tr = tr + "<td>"+arr[i].abname+"</td>";
+                    tr = tr + "<td>";
+                    tr = tr + "<a title='编辑' href='javascript:;' onclick='update("+arr[i].id+")' class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6df;</i></a>";
+                    tr = tr + "<a title='删除'  onclick='abdel("+arr[i].id+")' href='javascript:;'  class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6e2;</i></a>";
+                    tr = tr + "</td>";
+                    tr = tr + "</tr>";
+
+                }
+                $("#tr").html(tr);
+            }
+
+        })
+    }
+
+
+    $("#aaa").click(function () {
+        var name=$("#name").val();
+        var attrcate_id=$("#op").val();
+        var __token__=$("#__token__").val();
+        $.ajax({
+            url: "{:url('add')}",
+            type:"post",
+            data:{
+                name:name,
+                attrcate_id:attrcate_id,
+                __token__:__token__,
+            },
+            success: function (res) {
+                //console.log(res);
+                if (res.status=="no"){
+                    $("#tips").html(res.message);
+                    $("#tips").css("color","red");
+                    $("#name").val("");
+                    setTimeout(function(){
+                        $("#tips").html("");
+                    },3000);
+                } else if(res.status=="yes"){
+                    $("#name").val("");          //文本框置空
+                    show();
+                }
+                token();
+            }
+        })
+    })
+    //属性值添加弹出层
+    function update(id) {
+        $("#aid").html(id);
+        $.ajax({
+            url: "{:url('adshow')}",
+            data:{
+                id:id,
+            },
+            success: function (res) {
+                var arr=res.data;
+                var tr="";
+                for (var i=0;i<arr.length;i++) {
+                    tr = tr + "<tr class = 'warning' >";
+                    tr = tr + " <th>"+arr[i].name+"</th>";
+                    tr = tr + "<td>";
+                    tr = tr + "<a title='删除'  onclick='addel("+arr[i].id+")' href='javascript:;'  class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6e2;</i></a>";
+                    tr = tr + "</td>";
+                    tr = tr + "</tr>";
+
+                }
+                $("#tab").html(tr);
+            }
+
+        })
+        $("#modal-demo").modal("show");
+    }
+    //删除修改成功后的属性值展示
+    function ad_show() {
+        var id=$("#aid").html();
+        $.ajax({
+            url: "{:url('adshow')}",
+            data:{
+                id:id,
+            },
+            success: function (res) {
+                var arr=res.data;
+                var tr="";
+                for (var i=0;i<arr.length;i++) {
+                    tr = tr + "<tr class = 'warning' >";
+                    tr = tr + " <th>"+arr[i].name+"</th>";
+                    tr = tr + "<td>";
+                    tr = tr + "<a title='删除'  onclick='del("+arr[i].f_id+")' href='javascript:;'  class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6e2;</i></a>";
+                    tr = tr + "</td>";
+                    tr = tr + "</tr>";
+
+                }
+                $("#tab").html(tr);
+            }
+
+        })
+    }
+    //添加属性值
+    function addad() {
+        var aid=$("#aid").html();
+        var adname=$("#adname").val();
+        var __token__=$("#__token__").val();
+        $.ajax({
+            url: "{:url('adadd')}",
+            type:"post",
+            data:{
+                name:adname,
+                aid:aid,
+                __token__:__token__,
+            },
+            success: function (res) {
+                //console.log(res);
+                if (res.status=="no"){
+                    $("#ts").html(res.message);
+                    $("#ts").css("color","red");
+                    $("#adname").val("");
+                    setTimeout(function(){
+                        $("#ts").html("");
+                    },3000);
+                } else if(res.status=="yes"){
+                    $("#adname").val("");          //文本框置空
+                    ad_show();
+                }
+                token();
+            }
+        })
+    }
+    //属性值删除
+    function addel(id) {
+        var __token__=$("#__token__").val();
+        $.ajax({
+            type:'post',
+            url:"addel",
+            data:{
+                del_id:id,
+                __token__:__token__,
+            },
+            dataType:'json',
+            success:function(res) {
+                if (res.status=="yes") {
+                    ad_show();
+                }else{
+                    $("#ts").html(res.message);
+                    $("#ts").css("color", "red");
+                    setTimeout(function () {
+                        $("#ts").html("");
+                    }, 3000);
+                }
+                token();
+            }
+        })
+    }
+    //属性删除
+    function abdel(id) {
+        var __token__=$("#__token__").val();
+        $.ajax({
+            type:'post',
+            url:"abdel",
+            data:{
+                del_id:id,
+                __token__:__token__,
+            },
+            dataType:'json',
+            success:function(res) {
+                //console.log(res);
+                if (res.status=="yes") {
+                    show();
+                }else{
+                    $("#tips").html(res.message);
+                    $("#tips").css("color", "red");
+                    setTimeout(function () {
+                        $("#tips").html("");
+                    }, 3000);
+                }
+                token();
+            }
+        })
+    }
+    //属性批量删除
+    function datadel() {
+        var r = confirm("确认删除吗");
+        if (r == true) {
+            var a = $('.ck:checked');  //获取被选中的文本框里的内容
+            var __token__=$("#__token__").val();
+            var id = [];
+            for (var i = 0; i < a.length; i++) {  //循环获取被选中的文本框中的id
+                id.push(a[i].value);
+            }
+            $.ajax({
+                url: "{:url('abdel')}",
+                data: {
+                    del_id: id,
+                    __token__:__token__,
+                },
+                dataType:'json',
+                success: function (res) {
+                    //console.log(res);
+                    if (res.status == "yes") {
+                        $('#a').prop('checked', false);
+                        show();
+                    } else if (res.status == "no") {
+                        $("#ts").html(res.message);
+                        $("#ts").css("color", "red");
+                        setTimeout(function () {
+                            $("#ts").html("");
+                        }, 3000);
+                    }
+                    token();
+                }
+            })
+        }else{
+            $('#a').prop('checked',false);
+            $('.ck').prop('checked',false);
+        }
+    }
+</script>
